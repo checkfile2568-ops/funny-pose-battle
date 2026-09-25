@@ -1,0 +1,2771 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#07122e">
+<title>ฮาท่าเทพ — เกมทำท่าฮาผ่านกล้อง</title>
+<meta name="description" content="เกมคลายเครียดทำท่าตลกผ่านกล้อง AI แข่งเก็บคะแนนทั้งซีซั่น พร้อมบัตรพนักงานเกียรติยศ">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f5c542'/%3E%3Ccircle cx='23' cy='26' r='5' fill='%2307122e'/%3E%3Ccircle cx='41' cy='26' r='5' fill='%2307122e'/%3E%3Cellipse cx='32' cy='44' rx='9' ry='11' fill='%2307122e'/%3E%3C/svg%3E">
+<style>
+:root{
+  --navy-950:#050c20; --navy-900:#07122e; --navy-800:#0b1f4d; --navy-700:#13306e; --navy-600:#1d428f;
+  --gold:#f5c542; --gold-2:#ffdd7a; --gold-3:#c99a1a;
+  --pink:#ff5c8a; --mint:#3ddc97; --sky:#4cc9f0; --orange:#ff8c42; --red:#ff4d5e;
+  --text:#eef3ff; --muted:#9fb0d6; --dim:#6f82b0;
+  --glass:rgba(255,255,255,.07); --glass-2:rgba(255,255,255,.12); --line:rgba(255,255,255,.14);
+  --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --font:'Kanit',system-ui,sans-serif; --font-body:'Sarabun','Kanit',system-ui,sans-serif;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--navy-950)}
+body{margin:0;min-height:100vh;min-height:100dvh;background-color:var(--navy-900);color:var(--text);font-family:var(--font);overflow-x:clip}
+body{background:
+  radial-gradient(1200px 600px at 110% -10%,rgba(245,197,66,.16),transparent 60%),
+  radial-gradient(900px 500px at -20% 110%,rgba(76,201,240,.14),transparent 60%),
+  linear-gradient(180deg,var(--navy-900),var(--navy-950));background-attachment:fixed}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hidden{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Topbar ---------- */
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 16px 10px;
+  background:rgba(7,18,46,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand .logo{width:38px;height:38px;flex:none;border-radius:12px;background:linear-gradient(145deg,var(--gold-2),var(--gold-3));display:grid;place-items:center;box-shadow:0 4px 14px rgba(245,197,66,.35)}
+.brand .logo svg{width:28px;height:28px}
+.brand b{font-size:20px;font-weight:800;letter-spacing:.2px;line-height:1}
+.brand small{display:block;color:var(--muted);font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:13px;white-space:nowrap}
+.chip.gold{background:rgba(245,197,66,.14);border-color:rgba(245,197,66,.4);color:var(--gold-2)}
+.chip.hot{background:rgba(255,92,138,.16);border-color:rgba(255,92,138,.5);color:#ffd0dd}
+.iconbtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);font-size:18px}
+.iconbtn:active{transform:scale(.94)}
+@media (max-width:520px){ #chipCountdown{display:none} .brand small{max-width:38vw} }
+
+/* ---------- Layout ---------- */
+main{max-width:980px;margin:0 auto;padding:16px 16px calc(28px + var(--safe-b))}
+.screen{animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+.h1{font-size:clamp(34px,8vw,56px);font-weight:800;line-height:1.05;margin:4px 0 6px;letter-spacing:.3px}
+.h1 .g{background:linear-gradient(90deg,var(--gold-2),var(--gold),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.h2{font-size:20px;font-weight:700;margin:0 0 10px}
+.lead{color:var(--muted);font-family:var(--font-body);font-size:16px;margin:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+label.fld{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px;font-size:13px;color:var(--muted)}
+input.inp{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(3,10,30,.55);font-size:16px;outline:none}
+input.inp:focus{border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;font-weight:600;font-size:16px;
+  background:var(--glass-2);border:1px solid var(--line);transition:transform .08s ease,filter .2s}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.primary{background:linear-gradient(180deg,var(--gold-2),var(--gold) 60%,var(--gold-3));color:#1b1300;border:0;box-shadow:0 6px 20px rgba(245,197,66,.35)}
+.btn.pink{background:linear-gradient(180deg,#ff85a6,var(--pink));color:#fff;border:0}
+.btn.mint{background:linear-gradient(180deg,#7bf0c0,var(--mint));color:#032416;border:0}
+.btn.big{padding:16px 22px;font-size:20px;border-radius:18px;font-weight:700}
+.btn.block{width:100%}
+.note{font-family:var(--font-body);color:var(--muted);font-size:14px}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:14px;background:rgba(255,140,66,.12);border:1px solid rgba(255,140,66,.4);color:#ffd9bf;font-size:14px;margin-bottom:12px;font-family:var(--font-body)}
+
+/* ---------- Home ---------- */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:center;margin-bottom:14px}
+@media (max-width:720px){.hero{grid-template-columns:1fr}}
+.strip{display:flex;gap:8px;justify-content:center}
+.strip .art{width:31%;max-width:150px;aspect-ratio:200/220;border-radius:16px;background:var(--glass);border:1px solid var(--line);padding:4px}
+.strip .art:nth-child(2){transform:translateY(-10px) rotate(-2deg)}
+.strip .art:nth-child(1){transform:rotate(3deg)}
+.strip .art:nth-child(3){transform:rotate(-3deg)}
+.art svg{width:100%;height:100%;display:block}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+@media (max-width:640px){.modes{grid-template-columns:1fr}}
+.mode{position:relative;text-align:left;padding:16px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.mode::after{content:"";position:absolute;inset:auto -40px -60px auto;width:160px;height:160px;border-radius:50%;background:var(--accent,rgba(245,197,66,.18));filter:blur(10px);pointer-events:none}
+.mode .ttl{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700}
+.mode .ttl .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:rgba(255,255,255,.1)}
+.mode p{margin:0;color:var(--muted);font-family:var(--font-body);font-size:14px;line-height:1.45}
+.mode .act{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;position:relative;z-index:1}
+.todayposes{display:flex;gap:6px;flex-wrap:wrap}
+.todayposes span{font-size:12px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+.codeinp{width:110px!important;text-transform:uppercase;letter-spacing:4px;text-align:center;font-weight:700}
+.rules{margin-top:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.rules{grid-template-columns:1fr}}
+.rule{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-family:var(--font-body);font-size:14px;color:var(--muted)}
+.rule b{color:var(--text);font-family:var(--font)}
+.rule .n{font-size:22px}
+
+/* ---------- Stage (กล้อง) ---------- */
+#scr-game{position:fixed;inset:0;z-index:40;background:#000}
+.stage{position:absolute;inset:0;overflow:hidden;background:#000}
+.stage video,.stage canvas.mockcam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.stage canvas.ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.stage.attacked{animation:shake .45s ease}
+@keyframes shake{0%,100%{transform:none}20%{transform:translate(-8px,4px) rotate(-.6deg)}40%{transform:translate(7px,-5px) rotate(.6deg)}60%{transform:translate(-5px,3px)}80%{transform:translate(4px,-2px)}}
+.hud{position:absolute;inset:0;pointer-events:none;font-family:var(--font)}
+.hud .pe{pointer-events:auto}
+.hud-top{position:absolute;left:0;right:0;top:0;padding:calc(10px + var(--safe-t)) 12px 0;display:flex;align-items:flex-start;gap:8px}
+.hud-pill{background:rgba(5,12,32,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:15px;line-height:1.2}
+.hud-pill b{font-size:18px}
+.hud-pill small{display:block;color:var(--muted);font-size:12px}
+.hud-spacer{flex:1}
+.timer{position:absolute;left:12px;right:12px;top:calc(64px + var(--safe-t));height:8px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--mint),var(--gold),var(--pink));transform-origin:left;border-radius:99px}
+.timer.low i{animation:blink .5s steps(2) infinite}
+@keyframes blink{50%{opacity:.4}}
+.headtag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .2s}
+.holdbar{width:min(46vw,220px);height:22px;border-radius:99px;background:rgba(5,12,32,.7);border:2px solid rgba(255,255,255,.7);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.holdbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2bd47d,#8dffb8);transition:width .08s linear}
+.holdbar.off i{background:linear-gradient(90deg,#b8c3dd,#e2e8f7)}
+.reps{font-size:44px;font-weight:800;line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.45),0 0 18px rgba(0,0,0,.4)}
+.reps small{font-size:22px;opacity:.8}
+.reps.pop{animation:pop .25s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.hint{position:absolute;left:50%;bottom:calc(22px + var(--safe-b));transform:translateX(-50%);max-width:92vw;text-align:center;font-size:clamp(18px,4.6vw,26px);font-weight:700;padding:10px 18px;border-radius:16px;background:rgba(5,12,32,.66);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.hint.ok{background:rgba(43,212,125,.25);border-color:rgba(43,212,125,.7)}
+.meters{position:absolute;left:12px;bottom:calc(84px + var(--safe-b));display:flex;flex-direction:column;gap:6px;min-width:180px}
+.meter{display:grid;grid-template-columns:62px 1fr 38px;gap:8px;align-items:center;font-size:13px;background:rgba(5,12,32,.62);border:1px solid var(--line);border-radius:10px;padding:5px 8px}
+.meter .bar{position:relative;height:8px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden}
+.meter .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--sky);border-radius:99px}
+.meter .bar i.ok{background:var(--mint)}
+.meter .bar::after{content:"";position:absolute;left:66.6%;top:-2px;bottom:-2px;width:2px;background:var(--gold)}
+.center{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.introcard{width:min(92vw,420px);padding:18px;border-radius:22px;background:rgba(7,18,46,.82);border:1px solid rgba(245,197,66,.45);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:cardIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes cardIn{from{transform:scale(.6) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.introcard .art{width:170px;height:187px;margin:0 auto}
+.introcard .tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:rgba(245,197,66,.16);color:var(--gold-2);border:1px solid rgba(245,197,66,.4)}
+.introcard h3{margin:8px 0 4px;font-size:28px;font-weight:800}
+.introcard p{margin:0;color:#dfe7ff;font-family:var(--font-body);font-size:16px}
+.introcard .tip{margin-top:8px;color:var(--gold-2);font-size:14px}
+.minicard{position:absolute;right:12px;top:calc(82px + var(--safe-t));width:92px;padding:6px;border-radius:14px;background:rgba(7,18,46,.7);border:1px solid var(--line);text-align:center;font-size:11px;line-height:1.2}
+.minicard .art{width:80px;height:88px;margin:0 auto}
+.count{font-size:min(38vw,220px);font-weight:800;line-height:1;color:#fff;text-shadow:0 8px 0 rgba(0,0,0,.35),0 0 40px rgba(245,197,66,.7);animation:countPop .9s ease both}
+.count.go{font-size:min(20vw,130px);color:var(--gold-2)}
+@keyframes countPop{0%{transform:scale(2.2);opacity:0}25%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.8);opacity:0}}
+.banner-res{padding:18px 26px;border-radius:24px;text-align:center;font-weight:800;animation:cardIn .4s cubic-bezier(.2,1.4,.4,1);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.banner-res.win{background:linear-gradient(180deg,rgba(43,212,125,.92),rgba(18,140,80,.92))}
+.banner-res.lose{background:linear-gradient(180deg,rgba(255,92,138,.92),rgba(160,30,70,.92))}
+.banner-res .big{font-size:clamp(30px,8vw,52px);line-height:1.05}
+.banner-res .pts{font-size:22px;margin-top:6px}
+.banner-res .sub{font-size:15px;font-weight:500;opacity:.9;margin-top:4px}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.on{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+.okglow{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 0 rgba(43,212,125,0);transition:box-shadow .2s}
+.okglow.on{box-shadow:inset 0 0 0 6px rgba(43,212,125,.85),inset 0 0 60px rgba(43,212,125,.45)}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;left:50%;top:50%;font-size:34px;animation:burst 1.1s cubic-bezier(.1,.8,.3,1) forwards}
+@keyframes burst{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1) rotate(var(--r));opacity:0}}
+.projectile{position:absolute;font-size:72px;left:var(--sx);top:var(--sy);animation:fly .55s cubic-bezier(.5,0,.9,.6) forwards;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+@keyframes fly{to{left:var(--tx);top:var(--ty);transform:rotate(720deg) scale(1.6)}}
+.splat{position:absolute;transform:translate(-50%,-50%);text-align:center;animation:splat 1.6s ease forwards}
+.splat .blob{font-size:min(56vw,300px);line-height:1;filter:drop-shadow(0 10px 20px rgba(0,0,0,.5))}
+.splat .who{font-size:22px;font-weight:800;padding:6px 14px;border-radius:14px;background:rgba(255,77,94,.9);display:inline-block;margin-top:-20px}
+@keyframes splat{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}12%{transform:translate(-50%,-50%) scale(1.15);opacity:1}20%{transform:translate(-50%,-50%) scale(1)}75%{opacity:.95}100%{transform:translate(-50%,-44%) scale(1);opacity:0}}
+.opps{position:absolute;right:10px;top:calc(190px + var(--safe-t));display:flex;flex-direction:column;gap:6px;width:150px}
+.opp{display:grid;grid-template-columns:26px 1fr;gap:6px;align-items:center;padding:6px 8px;border-radius:12px;background:rgba(5,12,32,.66);border:1px solid var(--line);font-size:12px}
+.opp .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--navy-600)}
+.opp .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opp .pb{height:5px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:3px}
+.opp .pb i{display:block;height:100%;background:var(--sky)}
+.opp.clear{border-color:rgba(43,212,125,.8)}
+.opp.clear .pb i{background:var(--mint)}
+.quit{position:absolute;left:12px;bottom:calc(22px + var(--safe-b));pointer-events:auto;width:44px;height:44px;border-radius:14px;background:rgba(5,12,32,.6);border:1px solid var(--line);font-size:20px;display:grid;place-items:center}
+
+/* แผงตั้งค่ากล้อง */
+.setup{position:absolute;left:50%;bottom:calc(16px + var(--safe-b));transform:translateX(-50%);width:min(94vw,460px);padding:16px;border-radius:22px;background:rgba(7,18,46,.84);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:auto}
+.setup h3{margin:0 0 4px;font-size:20px}
+.checks{list-style:none;padding:0;margin:10px 0 12px;display:grid;gap:6px}
+.checks li{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--muted)}
+.checks li .st{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;background:rgba(255,255,255,.1);flex:none}
+.checks li.ok{color:var(--text)} .checks li.ok .st{background:var(--mint);color:#032416}
+.checks li.wait .st{animation:spin 1s linear infinite;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);background:none}
+.checks li.bad{color:#ffc2cb} .checks li.bad .st{background:var(--red)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scanline{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 24px var(--gold);top:0;animation:scan 2.2s ease-in-out infinite;opacity:.8}
+@keyframes scan{0%{top:8%}50%{top:88%}100%{top:8%}}
+.setup .msg{min-height:22px;font-family:var(--font-body);color:var(--gold-2);font-size:15px}
+
+/* ---------- Room ---------- */
+.roomcode{font-size:clamp(46px,14vw,84px);font-weight:800;letter-spacing:10px;line-height:1;color:var(--gold-2);text-shadow:0 4px 0 rgba(0,0,0,.3)}
+.qr{background:#fff;border-radius:16px;padding:10px;width:180px;height:180px;display:grid;place-items:center}
+.qr img,.qr svg{width:100%;height:100%;image-rendering:pixelated}
+.plist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.plist li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.plist .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--navy-600);flex:none}
+.plist .nm{flex:1;min-width:0}
+.plist .nm small{display:block;color:var(--muted);font-size:12px}
+.plist .rd{font-size:13px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.08)}
+.plist .rd.on{background:rgba(43,212,125,.22);color:#b9ffd9;border:1px solid rgba(43,212,125,.6)}
+
+/* ---------- Practice ---------- */
+.posegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.posecard{padding:10px;border-radius:16px;background:var(--glass);border:1px solid var(--line);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.posecard .art{width:110px;height:121px}
+.posecard b{font-size:15px}
+.posecard small{color:var(--muted);font-size:12px}
+
+/* ---------- Result ---------- */
+.res-head{text-align:center;margin:6px 0 14px}
+.res-score{font-size:clamp(56px,16vw,96px);font-weight:800;line-height:1;background:linear-gradient(180deg,#fff,var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.res-title{display:inline-block;margin-top:8px;padding:6px 14px;border-radius:99px;background:rgba(245,197,66,.16);border:1px solid rgba(245,197,66,.5);color:var(--gold-2);font-weight:600}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.res-grid{grid-template-columns:1fr}}
+.rounds{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rounds li{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:8px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.rounds img{width:64px;height:48px;object-fit:cover;border-radius:10px;background:#000;cursor:pointer}
+.rounds .ok{color:var(--mint);font-weight:700}
+.rounds .ng{color:#ffb3c0;font-weight:700}
+.rounds small{color:var(--muted);display:block;font-size:12px}
+.rounds .gifbtn{font-size:12px;padding:3px 8px;border-radius:8px;background:rgba(76,201,240,.18);border:1px solid rgba(76,201,240,.5);margin-top:4px}
+.idcard-wrap{display:flex;flex-direction:column;gap:10px;align-items:center}
+.idcard-wrap canvas{width:100%;max-width:380px;height:auto;border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.standings{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.standings li{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.standings li.me{background:rgba(245,197,66,.14);border:1px solid rgba(245,197,66,.45)}
+.submitline{margin-top:10px;font-family:var(--font-body);color:var(--muted);font-size:14px;text-align:center}
+
+/* ---------- Modal / Leaderboard ---------- */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(2,6,18,.7);display:grid;place-items:center;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal .box{width:min(560px,100%);max-height:88vh;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(19,48,110,.95),rgba(7,18,46,.98));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.modal .hd{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal .hd b{flex:1;font-size:20px}
+.tabs{display:flex;gap:6px;padding:10px 16px 0}
+.tabs button{flex:1;padding:8px;border-radius:12px;background:var(--glass);border:1px solid var(--line);font-size:15px}
+.tabs button.on{background:rgba(245,197,66,.2);border-color:rgba(245,197,66,.6);color:var(--gold-2);font-weight:600}
+.lbmeta{padding:8px 16px;color:var(--muted);font-size:13px;font-family:var(--font-body)}
+.lb{list-style:none;margin:0;padding:0 16px 16px;overflow:auto;display:grid;gap:6px}
+.lb li{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid transparent}
+.lb li.me{background:rgba(245,197,66,.14);border-color:rgba(245,197,66,.5)}
+.lb .rk{font-size:20px;font-weight:800;text-align:center}
+.lb .nm small{display:block;color:var(--muted);font-size:12px}
+.lb .pt{font-weight:800;font-size:18px;text-align:right}
+.lb .pt small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.empty{padding:30px 16px;text-align:center;color:var(--muted);font-family:var(--font-body)}
+.lightbox img{max-width:92vw;max-height:78vh;border-radius:16px}
+
+.toast{position:fixed;left:50%;top:calc(76px + var(--safe-t));transform:translateX(-50%);z-index:80;padding:10px 16px;border-radius:14px;background:rgba(5,12,32,.92);border:1px solid var(--line);font-size:15px;box-shadow:var(--shadow);animation:fadeUp .25s ease;max-width:92vw;text-align:center}
+.spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:var(--gold);animation:spin .8s linear infinite;display:inline-block;vertical-align:-3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<header class="topbar" id="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="23" cy="25" r="6" fill="#07122e"/><circle cx="41" cy="25" r="6" fill="#07122e"/><circle cx="25" cy="23" r="2" fill="#fff"/><circle cx="43" cy="23" r="2" fill="#fff"/><ellipse cx="32" cy="45" rx="10" ry="12" fill="#07122e"/><ellipse cx="32" cy="50" rx="6" ry="4" fill="#ff5c8a"/></svg></div>
+    <div style="min-width:0"><b>ฮาท่าเทพ</b><small id="seasonLabel">กำลังโหลดซีซั่น…</small></div>
+  </div>
+  <span class="chip" id="chipCountdown" title="เวลาที่เหลือของซีซั่น">⏳ –</span>
+  <span class="chip gold" id="chipPoints" title="คะแนนซีซั่นของคุณ">⭐ –</span>
+  <button class="iconbtn" id="btnMute" aria-label="เปิด/ปิดเสียง">🔊</button>
+  <button class="iconbtn" id="btnBoard" aria-label="ตารางอันดับ">🏆</button>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section class="screen" id="scr-home">
+    <div id="banners"></div>
+    <div class="hero">
+      <div>
+        <div class="chip hot" id="finalDayChip" style="display:none">🔥 วันสุดท้าย คะแนน ×2</div>
+        <h1 class="h1">ทำท่า<span class="g">ฮาให้สุด</span><br>แล้วเก็บแต้มทั้งซีซั่น</h1>
+        <p class="lead">AI ดูท่าผ่านกล้องหน้า ทำตามโจทย์ให้ทันใน 10 วินาที ได้รูปหลุด ๆ ไปอวด พร้อมบัตรพนักงานเกียรติยศ</p>
+      </div>
+      <div class="strip" id="heroStrip"></div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label class="fld">ชื่อเล่น (ใช้ชื่อเดิมทุกครั้งเพื่อสะสมคะแนน)
+          <input class="inp" id="inName" maxlength="30" autocomplete="nickname" placeholder="เช่น ต้น, พี่หนิง">
+        </label>
+        <label class="fld">แผนก / ฝ่าย
+          <input class="inp" id="inDept" maxlength="30" placeholder="เช่น ไอที, การเงิน">
+        </label>
+      </div>
+    </div>
+
+    <div class="modes">
+      <div class="mode" style="--accent:rgba(245,197,66,.22)">
+        <div class="ttl"><span class="ic">🎯</span>ด่านประจำวัน</div>
+        <p>ทั้งออฟฟิศได้ <b id="dailyCount">5</b> ท่าชุดเดียวกัน เล่นซ้ำได้ไม่จำกัด นับคะแนนเกมที่ดีที่สุดของวัน</p>
+        <div class="todayposes" id="todayPoses"></div>
+        <div class="act"><button class="btn primary" id="btnDaily">▶ เล่นเลย</button><span class="chip" id="todayBest" style="display:none"></span></div>
+      </div>
+      <div class="mode" style="--accent:rgba(255,92,138,.22)">
+        <div class="ttl"><span class="ic">⚔️</span>ห้องแข่ง (เครื่องใครเครื่องมัน)</div>
+        <p>สร้างห้องแล้วส่งลิงก์/QR ให้เพื่อน ท่าเดียวกันพร้อมกัน ใครทำได้ก่อนได้ปาของใส่จอเพื่อน +50 แต้ม</p>
+        <div class="act">
+          <button class="btn pink" id="btnRoomCreate">สร้างห้อง</button>
+          <input class="inp codeinp" id="inCode" maxlength="4" placeholder="รหัส" aria-label="รหัสห้อง">
+          <button class="btn" id="btnRoomJoin">เข้าห้อง</button>
+        </div>
+      </div>
+      <div class="mode" style="--accent:rgba(76,201,240,.22)">
+        <div class="ttl"><span class="ic">💞</span>คู่หูกล้องเดียว</div>
+        <p>2 คนยืนหน้ากล้องเดียวกัน: ท่าหัวใจ ท่าฟิวชัน และกอริลล่าคู่ คะแนนเข้าทั้งสองคน</p>
+        <div class="act">
+          <input class="inp" id="inPartner" maxlength="30" placeholder="ชื่อคู่หู" style="width:150px">
+          <input class="inp" id="inPartnerDept" maxlength="30" placeholder="แผนกคู่หู" style="width:130px">
+          <button class="btn" id="btnDuo">▶ เริ่ม</button>
+        </div>
+      </div>
+      <div class="mode" style="--accent:rgba(61,220,151,.2)">
+        <div class="ttl"><span class="ic">🧪</span>ฝึกซ้อม</div>
+        <p>เลือกซ้อมทีละท่า มีเกจบอกว่าใกล้ผ่านแค่ไหน ไม่นับคะแนน เหมาะสำหรับลองก่อนแข่งจริง</p>
+        <div class="act"><button class="btn mint" id="btnPractice">เลือกท่า</button></div>
+      </div>
+    </div>
+
+    <div class="rules">
+      <div class="rule"><span class="n">🗓️</span><div><b>คะแนนซีซั่น</b><br>รวมคะแนนเกมที่ดีที่สุดของแต่ละวัน เล่นทุกวันได้เปรียบ</div></div>
+      <div class="rule"><span class="n">⚡</span><div><b>ยิ่งเร็วยิ่งได้เยอะ</b><br>ผ่านด่าน 100 + โบนัสเวลา + ต่อคอมโบ ×1.1 ขึ้นไป</div></div>
+      <div class="rule"><span class="n">🏁</span><div><b id="ruleFinal">วันสุดท้าย ×2</b><br><span id="prizeNote">ลุ้นจนวินาทีสุดท้าย</span></div></div>
+    </div>
+  </section>
+
+  <!-- ================= ROOM LOBBY ================= -->
+  <section class="screen hidden" id="scr-room">
+    <div class="grid2">
+      <div class="card" style="text-align:center">
+        <div class="note">รหัสห้อง</div>
+        <div class="roomcode" id="roomCode">––––</div>
+        <div class="row" style="justify-content:center;margin:12px 0">
+          <div class="qr" id="roomQr"></div>
+        </div>
+        <div class="row" style="justify-content:center">
+          <button class="btn" id="btnCopyLink">🔗 คัดลอกลิงก์</button>
+          <button class="btn" id="btnShareLink">📤 แชร์</button>
+        </div>
+        <p class="note" style="margin-top:10px">ให้เพื่อนสแกน QR หรือกรอกรหัสที่หน้าแรก<br>แต่ละคนเล่นบนมือถือ/โน้ตบุ๊กของตัวเอง</p>
+      </div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:10px">
+          <div class="h2" style="margin:0">ผู้เล่นในห้อง <span class="note" id="roomCount"></span></div>
+          <button class="btn" id="btnRoomLeave">ออกจากห้อง</button>
+        </div>
+        <ul class="plist" id="roomPlayers"></ul>
+        <div style="margin-top:14px;display:grid;gap:10px">
+          <button class="btn big block primary" id="btnReady">💪 พร้อมสู้ชีวิต! (READY)</button>
+          <button class="btn big block pink hidden" id="btnStart">🚀 เริ่มเกม</button>
+          <div class="note" id="roomStatus" style="text-align:center"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section class="screen hidden" id="scr-practice">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div><div class="h2" style="margin:0">ฝึกซ้อมทีละท่า</div><div class="note">แตะท่าที่อยากลอง • เกจด้านล่างบอกว่าใกล้ผ่านแค่ไหน (ผ่านเมื่อถึงเส้นทอง)</div></div>
+      <button class="btn" data-go="home">← หน้าแรก</button>
+    </div>
+    <div class="posegrid" id="poseGrid"></div>
+  </section>
+
+  <!-- ================= RESULT ================= -->
+  <section class="screen hidden" id="scr-result">
+    <div class="res-head">
+      <div class="note" id="resMode"></div>
+      <div class="res-score" id="resScore">0</div>
+      <div class="note" id="resSub"></div>
+      <div class="res-title" id="resTitle"></div>
+      <div class="submitline" id="resSubmit"></div>
+    </div>
+    <div class="res-grid">
+      <div class="card">
+        <div class="h2">ภาพหลุดแต่ละด่าน</div>
+        <ul class="rounds" id="resRounds"></ul>
+        <div id="resStandWrap" class="hidden" style="margin-top:14px">
+          <div class="h2">อันดับในห้อง</div>
+          <ul class="standings" id="resStand"></ul>
+        </div>
+      </div>
+      <div class="card idcard-wrap">
+        <div class="h2" style="align-self:flex-start">🪪 บัตรพนักงานเกียรติยศ</div>
+        <canvas id="idCanvas" width="720" height="1040"></canvas>
+        <div class="row" style="justify-content:center">
+          <button class="btn primary" id="btnCardDl">⬇️ ดาวน์โหลดบัตร</button>
+          <button class="btn" id="btnCardShare">📤 แชร์</button>
+          <button class="btn" id="btnCardShuffle" title="สุ่มตำแหน่งใหม่">🎲 สุ่มตำแหน่ง</button>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:16px">
+      <button class="btn big primary" id="btnAgain">🔁 เล่นอีกครั้ง</button>
+      <button class="btn big" id="btnResBoard">🏆 ตารางอันดับ</button>
+      <button class="btn big" data-go="home">🏠 หน้าแรก</button>
+    </div>
+  </section>
+</main>
+
+<!-- ================= GAME STAGE ================= -->
+<section class="hidden" id="scr-game">
+  <div class="stage" id="stage">
+    <video id="cam" playsinline muted autoplay></video>
+    <canvas class="ov" id="ov"></canvas>
+    <div class="okglow" id="okGlow"></div>
+    <div class="scanline hidden" id="scanline"></div>
+    <div class="hud" id="hud">
+      <div class="hud-top" id="hudTop">
+        <div class="hud-pill" id="hudRound"><small>ด่าน</small><b>1/5</b></div>
+        <div class="hud-pill" id="hudPose" style="max-width:45vw"><small>ท่า</small><b>–</b></div>
+        <div class="hud-spacer"></div>
+        <div class="hud-pill" id="hudScore" style="text-align:right"><small>คะแนน</small><b>0</b></div>
+      </div>
+      <div class="timer hidden" id="timer"><i></i></div>
+      <div class="minicard hidden" id="miniCard"></div>
+      <div class="opps hidden" id="opps"></div>
+      <div class="headtag hidden" id="headTag">
+        <div class="reps hidden" id="repsTxt">0<small>/10</small></div>
+        <div class="holdbar" id="holdBar"><i></i></div>
+      </div>
+      <div class="meters hidden" id="meters"></div>
+      <div class="center" id="centerLayer"></div>
+      <div class="hint hidden" id="hint"></div>
+      <button class="quit pe" id="btnQuit" aria-label="ออกจากเกม">✕</button>
+      <div class="setup hidden" id="setupPanel">
+        <h3 id="setupTitle">สแกนใบหน้าและโครงร่าง</h3>
+        <div class="note" id="setupSub">วางหน้าไว้กลางกรอบ ถอยให้เห็นไหล่และแขน แล้วทำหน้านิ่ง ๆ สักครู่</div>
+        <ul class="checks" id="setupChecks"></ul>
+        <div class="msg" id="setupMsg"></div>
+        <button class="btn big block primary" id="btnSetupReady" disabled>💪 พร้อมสู้ชีวิต!</button>
+      </div>
+    </div>
+    <div class="fx" id="fx"></div>
+    <div class="flash" id="flash"></div>
+  </div>
+</section>
+
+<!-- ================= LEADERBOARD ================= -->
+<div class="modal hidden" id="modalBoard" role="dialog" aria-modal="true" aria-label="ตารางอันดับ">
+  <div class="box">
+    <div class="hd"><b>🏆 ตารางอันดับ</b><button class="iconbtn" data-close aria-label="ปิด">✕</button></div>
+    <div class="tabs" id="boardTabs">
+      <button data-scope="season" class="on">ทั้งซีซั่น</button>
+      <button data-scope="week">สัปดาห์นี้</button>
+      <button data-scope="today">วันนี้</button>
+    </div>
+    <div class="lbmeta" id="boardMeta"></div>
+    <ul class="lb" id="boardList"></ul>
+  </div>
+</div>
+<div class="modal hidden lightbox" id="modalImg" role="dialog" aria-modal="true" aria-label="รูปภาพ">
+  <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+    <img id="lightImg" alt="ภาพหลุด">
+    <div class="row"><a class="btn primary" id="lightDl" download="haa-pose.jpg">⬇️ ดาวน์โหลด</a><button class="btn" data-close>ปิด</button></div>
+  </div>
+</div>
+<div id="toastHost"></div>
+<script>
+/*<POSE-LIB>*/
+/* ============================================================
+ *  PoseLib — คลังท่า + ตัวตรวจท่า (ฟังก์ชันบริสุทธิ์ ไม่แตะ DOM)
+ *  input ของทุกท่า:
+ *    inp = { face: FaceFeatures|null, bodies: BodyFrame[] (เรียงซ้าย→ขวาตามภาพกล้อง), t: ms }
+ *  ท่าแบบ hold  : check(inp, cal, k) → { metric (≥1 = ผ่าน), valid, hint, bonus, anchor }
+ *  ท่าแบบ reps  : step(inp, mem, cal, k) → { reps (จำนวนครั้งที่เพิ่ม), ok, metric, valid, hint, anchor }
+ *  k = ตัวคูณความยาก (easy 0.8 / normal 1 / hard 1.15) — ค่ายิ่งมากยิ่งยาก
+ *
+ *  ต่อยอด: เพิ่มท่าใหม่ = เพิ่ม object ใน POSES (และภาพการ์ตูนใน ART ของแอป)
+ * ============================================================ */
+(function (root) {
+  'use strict';
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const d2 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const deg = r => r * 180 / Math.PI;
+  function angleAt(a, b, c) {
+    const v1x = a.x - b.x, v1y = a.y - b.y, v2x = c.x - b.x, v2y = c.y - b.y;
+    const den = (Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y)) || 1e-6;
+    return deg(Math.acos(clamp((v1x * v2x + v1y * v2y) / den, -1, 1)));
+  }
+  const DIFF = { easy: 0.8, normal: 1, hard: 1.15 };
+
+  /* ---------------- ใบหน้า ---------------- */
+  const DEF_FACE = { jawOpen: 0.03, eyeWide: 0.05, cheekPuff: 0.03, smile: 0.05, browOuter: 0.05, browInner: 0.08, pucker: 0.05, eyeAp: 0.28, cheekRatio: 0 };
+
+  /** bs = { blendshapeName: score }, lm = 478 จุด {x,y,z} (normalized), aspect = กว้าง/สูง ของวิดีโอ */
+  function faceFeatures(bs, lm, aspect) {
+    const g = n => bs[n] || 0;
+    const P = i => ({ x: lm[i].x * aspect, y: lm[i].y });
+    const eyeL = d2(P(159), P(145)) / (d2(P(33), P(133)) || 1e-6);
+    const eyeR = d2(P(386), P(374)) / (d2(P(362), P(263)) || 1e-6);
+    const iod = d2(P(33), P(263)) || 1e-6;
+    const cheek = (d2(P(132), P(361)) + d2(P(58), P(288))) / 2 / iod;
+    const lipGap = d2(P(13), P(14)) / (d2(P(61), P(291)) || 1e-6);
+    let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+    for (let i = 0; i < lm.length; i += 3) {
+      const p = lm[i];
+      if (p.x < x0) x0 = p.x; if (p.x > x1) x1 = p.x;
+      if (p.y < y0) y0 = p.y; if (p.y > y1) y1 = p.y;
+    }
+    return {
+      jawOpen: g('jawOpen'),
+      eyeWide: (g('eyeWideLeft') + g('eyeWideRight')) / 2,
+      cheekPuff: g('cheekPuff'),
+      smile: (g('mouthSmileLeft') + g('mouthSmileRight')) / 2,
+      blinkL: g('eyeBlinkLeft'), blinkR: g('eyeBlinkRight'),
+      browOuter: Math.max(g('browOuterUpLeft'), g('browOuterUpRight')),
+      browInner: g('browInnerUp'),
+      pucker: g('mouthPucker'),
+      frown: (g('mouthFrownLeft') + g('mouthFrownRight')) / 2,
+      pout: Math.max(g('mouthShrugLower'), g('mouthRollLower')),
+      upperUp: (g('mouthUpperUpLeft') + g('mouthUpperUpRight')) / 2,
+      lookIn: Math.min(g('eyeLookInLeft'), g('eyeLookInRight')),
+      eyeAp: (eyeL + eyeR) / 2, cheekRatio: cheek, lipGap: lipGap,
+      box: { x0: x0, y0: y0, x1: x1, y1: y1 },
+      center: { x: lm[1].x, y: lm[1].y }
+    };
+  }
+
+  /** baseline ใบหน้าตอนนิ่ง (median ของหลายเฟรม) */
+  function calibrateFace(samples) {
+    if (!samples || !samples.length) return Object.assign({}, DEF_FACE);
+    const med = key => {
+      const a = samples.map(s => s[key]).filter(v => typeof v === 'number' && isFinite(v)).sort((x, y) => x - y);
+      return a.length ? a[Math.floor(a.length / 2)] : DEF_FACE[key];
+    };
+    const out = {};
+    Object.keys(DEF_FACE).forEach(k => { out[k] = med(k); });
+    // กัน baseline สูงผิดปกติ (เช่น ยิ้มอยู่ตอนสแกน)
+    out.jawOpen = Math.min(out.jawOpen, 0.2);
+    out.eyeWide = Math.min(out.eyeWide, 0.3);
+    out.cheekPuff = Math.min(out.cheekPuff, 0.2);
+    out.browInner = Math.min(out.browInner, 0.35);
+    out.browOuter = Math.min(out.browOuter, 0.35);
+    out.eyeAp = clamp(out.eyeAp, 0.15, 0.45);
+    return out;
+  }
+
+  /* ---------------- ร่างกาย ---------------- */
+  /** lm = 33 จุด {x,y,z,visibility}, world = 33 จุด (เมตร) หรือ null */
+  function bodyFrame(lm, aspect, world) {
+    const P = i => {
+      const p = lm[i];
+      if (!p) return { x: 0, y: 0, v: 0, rx: 0, ry: 0 };
+      return { x: p.x * aspect, y: p.y, v: p.visibility === undefined ? 1 : p.visibility, rx: p.x, ry: p.y };
+    };
+    const f = {
+      nose: P(0), ls: P(11), rs: P(12), le: P(13), re: P(14), lw: P(15), rw: P(16),
+      li: P(19), ri: P(20), lh: P(23), rh: P(24), aspect: aspect, world: world || null
+    };
+    f.ok = f.ls.v > 0.5 && f.rs.v > 0.5 && f.nose.v > 0.5;
+    f.smid = { x: (f.ls.x + f.rs.x) / 2, y: (f.ls.y + f.rs.y) / 2 };
+    f.sw = d2(f.ls, f.rs);
+    f.scale = Math.max(f.sw, 1.4 * d2(f.nose, f.smid), 1e-3);
+    f.hips = f.lh.v > 0.5 && f.rh.v > 0.5;
+    f.hmid = f.hips ? { x: (f.lh.x + f.rh.x) / 2, y: (f.lh.y + f.rh.y) / 2 } : null;
+    f.arms = [
+      { side: 'L', s: f.ls, e: f.le, w: f.lw, i: f.li },
+      { side: 'R', s: f.rs, e: f.re, w: f.rw, i: f.ri }
+    ];
+    f.head = { x: f.nose.rx, y: f.nose.ry - 0.5 * f.scale }; // ตำแหน่งเหนือหัว (พิกัดภาพดิบ)
+    return f;
+  }
+
+  function mainBody(inp) {
+    const bs = (inp && inp.bodies || []).filter(b => b.ok);
+    if (!bs.length) return null;
+    if (bs.length === 1) return bs[0];
+    // เลือกคนที่ตัวใหญ่ที่สุด (ใกล้กล้องที่สุด)
+    return bs.slice().sort((a, b) => b.scale - a.scale)[0];
+  }
+  function twoBodies(inp) {
+    const bs = (inp && inp.bodies || []).filter(b => b.ok);
+    if (bs.length < 2) return null;
+    const two = bs.slice().sort((a, b) => b.scale - a.scale).slice(0, 2);
+    return two.sort((a, b) => a.nose.x - b.nose.x);
+  }
+  const NO_FACE = { valid: false, metric: 0, hint: 'ไม่เห็นหน้า — หันหน้าเข้ากล้อง' };
+  const NO_BODY = { valid: false, metric: 0, reps: 0, hint: 'ไม่เห็นไหล่ — ถอยหลังอีกนิด' };
+  const faceAnchor = f => ({ x: (f.box.x0 + f.box.x1) / 2, y: f.box.y0 - 0.04 });
+
+  /* ---------------- ตัวตรวจท่าร่วม ---------------- */
+
+  /** กอริลล่าทุบอก: นับทุกครั้งที่ข้อมือ "เข้า" โซนหน้าอก (มี hysteresis กันนับซ้ำ) */
+  function gorillaStep(b, mem, k, t) {
+    const S = b.scale;
+    const C = { x: b.smid.x, y: b.smid.y + 0.38 * S };
+    const enter = 0.5 / k, exit = enter + 0.22;
+    let reps = 0, inAny = false, best = 9;
+    for (const a of b.arms) {
+      const key = a.side;
+      if (a.w.v < 0.2) { mem[key] = false; continue; }
+      const d = d2(a.w, C) / S;
+      if (d < best) best = d;
+      if (!mem[key] && d < enter) {
+        if (t - (mem['t' + key] || -1e9) > 110) { reps++; mem['t' + key] = t; }
+        mem[key] = true;
+      } else if (mem[key] && d > exit) {
+        mem[key] = false;
+      }
+      if (mem[key]) inAny = true;
+    }
+    return { reps: reps, ok: inAny, metric: clamp(enter / Math.max(best, 1e-3), 0, 1.5) };
+  }
+
+  /* ---------------- คลังท่า ---------------- */
+  const POSES = [
+    /* ===== หมวดใบหน้า ===== */
+    {
+      id: 'jawdrop', name: 'วิญญาณหลุดร่าง', cat: 'face', needs: 'face', persons: 1, type: 'hold', holdMs: 3000,
+      how: 'อ้าปากค้างให้กว้างที่สุด + ถลึงตาโต ค้างไว้ 3 วินาที',
+      tip: 'ทำหน้าเหมือนเพิ่งเห็นยอดบิลค่าไฟ',
+      voice: { vowel: 'a', f0: [150, 290] },
+      titles: ['หน่วยอ้าปากค้าง{tier}', 'วิญญาณหลุดร่างประจำ{dept}'],
+      check(inp, cal, k) {
+        const f = inp.face; if (!f) return NO_FACE;
+        const cf = cal.face || DEF_FACE;
+        const mJaw = f.jawOpen / (0.42 * k);
+        const eyeCue = Math.max((f.eyeWide - cf.eyeWide) / (0.10 * k), (f.eyeAp / (cf.eyeAp || 0.28) - 1) / (0.12 * k));
+        const closed = Math.max(f.blinkL, f.blinkR) > 0.55;
+        const need = mJaw >= 1.5 ? 0.6 : 1;           // อ้าปากสุด ๆ ผ่อนเรื่องตาให้
+        const mEye = closed ? 0 : eyeCue / need;
+        return {
+          metric: Math.min(mJaw, mEye), anchor: faceAnchor(f),
+          hint: mJaw < 1 ? 'อ้าปากกว้างอีก!' : (mEye < 1 ? 'ถลึงตาโตอีก!' : 'ค้างไว้!'),
+          meters: [['ปาก', mJaw], ['ตา', mEye]]
+        };
+      }
+    },
+    {
+      id: 'puffer', name: 'แก้มป่องปลาปักเป้า', cat: 'face', needs: 'face', persons: 1, type: 'hold', holdMs: 3000,
+      how: 'ปิดปาก อมลมให้แก้มป่องที่สุด ค้างไว้ 3 วินาที (ทำตาเหล่ได้โบนัส!)',
+      tip: 'ตาเหล่เข้าหากันได้ +30 คะแนน',
+      voice: { vowel: 'm', f0: [120, 220] },
+      bonusPts: 30, bonusLabel: 'ตาเหล่โบนัส',
+      titles: ['ปลาปักเป้าแก้มตุ่ย{tier}', 'นักอมลมมือหนึ่ง{dept}'],
+      check(inp, cal, k) {
+        const f = inp.face; if (!f) return NO_FACE;
+        const cf = cal.face || DEF_FACE;
+        const bsCue = (f.cheekPuff - cf.cheekPuff) / (0.14 * k);
+        const lmCue = cf.cheekRatio ? (f.cheekRatio / cf.cheekRatio - 1) / (0.03 * k) : 0;
+        const closed = f.jawOpen < 0.22 && f.lipGap < 0.12;
+        const puff = Math.max(bsCue, lmCue);
+        return {
+          metric: puff * (closed ? 1 : 0.4), anchor: faceAnchor(f),
+          bonus: f.lookIn > 0.28 ? 'crossEye' : null,
+          hint: !closed ? 'ปิดปากแล้วอมลมไว้' : (puff < 1 ? 'ป่องแก้มอีก!' : 'ค้างไว้! ลองทำตาเหล่ด้วย'),
+          meters: [['แก้ม', puff], ['ปิดปาก', closed ? 1 : 0]]
+        };
+      }
+    },
+    {
+      id: 'grin32', name: 'ยิ้มเห็นฟันครบ 32 ซี่', cat: 'face', needs: 'face', persons: 1, type: 'hold', holdMs: 2000,
+      how: 'ฉีกยิ้มกว้างจนเห็นฟัน + ยักคิ้วหรือหลิ่วตาข้างเดียว ค้างไว้ 2 วินาที',
+      tip: 'ยิ้มแบบพนักงานดีเด่นประจำเดือน',
+      voice: { vowel: 'i', f0: [220, 420] },
+      titles: ['ยิ้มสยามพันล้าน{tier}', 'ทูตยิ้มประจำ{dept}'],
+      check(inp, cal, k) {
+        const f = inp.face; if (!f) return NO_FACE;
+        const cf = cal.face || DEF_FACE;
+        const smileM = f.smile / (0.55 * k);
+        const teeth = f.lipGap > 0.035 || f.upperUp > 0.15 || f.jawOpen > 0.08;
+        const wink = Math.abs(f.blinkL - f.blinkR) / (0.35 * k);
+        const brow = Math.max(f.browOuter - cf.browOuter, f.browInner - cf.browInner) / (0.22 * k);
+        const quirk = Math.max(wink, brow);
+        return {
+          metric: Math.min(smileM, quirk) * (teeth ? 1 : 0.7), anchor: faceAnchor(f),
+          hint: smileM < 1 ? 'ฉีกยิ้มให้กว้างสุด!' : (!teeth ? 'โชว์ฟันหน่อย!' : (quirk < 1 ? 'ยักคิ้ว หรือหลิ่วตาข้างเดียว!' : 'ค้างไว้!')),
+          meters: [['ยิ้ม', smileM], ['คิ้ว/ตา', quirk]]
+        };
+      }
+    },
+    {
+      id: 'duckface', name: 'ปากเป็ดเซลฟี่', cat: 'face', needs: 'face', persons: 1, type: 'hold', holdMs: 3000,
+      how: 'ห่อปากยื่นเป็นปากเป็ดให้สุด ค้างไว้ 3 วินาที',
+      tip: 'มุมเซลฟี่ 45 องศาแบบอินฟลูฯ',
+      voice: { vowel: 'u', f0: [180, 330] },
+      titles: ['ราชาปากเป็ด{tier}', 'อินฟลูเอนเซอร์ประจำ{dept}'],
+      check(inp, cal, k) {
+        const f = inp.face; if (!f) return NO_FACE;
+        const cf = cal.face || DEF_FACE;
+        const pk = (f.pucker - cf.pucker) / (0.45 * k);
+        const ok = f.jawOpen < 0.3;
+        return {
+          metric: pk * (ok ? 1 : 0.5), anchor: faceAnchor(f),
+          hint: !ok ? 'หุบปากแล้วห่อปากยื่น' : (pk < 1 ? 'ยื่นปากอีก!' : 'ค้างไว้!'),
+          meters: [['ปากเป็ด', pk]]
+        };
+      }
+    },
+    {
+      id: 'puppy', name: 'ลูกหมาอ้อนเจ้านาย', cat: 'face', needs: 'face', persons: 1, type: 'hold', holdMs: 3000,
+      how: 'ยกหัวคิ้วขึ้น ทำตาอ้อนวอน ปากเบะนิด ๆ ค้างไว้ 3 วินาที',
+      tip: 'สายตาขอขึ้นเงินเดือน (เบะปากได้โบนัส)',
+      voice: { vowel: 'i', f0: [420, 600] },
+      bonusPts: 20, bonusLabel: 'ปากเบะโบนัส',
+      titles: ['ลูกหมาอ้อนเจ้านาย{tier}', 'เจ้าของสายตาขอขึ้นเงินเดือน{tier}'],
+      check(inp, cal, k) {
+        const f = inp.face; if (!f) return NO_FACE;
+        const cf = cal.face || DEF_FACE;
+        const brow = (f.browInner - cf.browInner) / (0.28 * k);
+        const calm = f.smile < 0.4 && f.jawOpen < 0.35;
+        return {
+          metric: brow * (calm ? 1 : 0.5), anchor: faceAnchor(f),
+          bonus: (f.frown > 0.25 || f.pout > 0.3) ? 'pout' : null,
+          hint: !calm ? 'อย่าเพิ่งยิ้ม! ทำหน้าน่าสงสาร' : (brow < 1 ? 'ยกหัวคิ้วขึ้นอีก!' : 'ค้างไว้! เบะปากด้วยได้โบนัส'),
+          meters: [['หัวคิ้ว', brow]]
+        };
+      }
+    },
+
+    /* ===== หมวดแขนและร่างกาย ===== */
+    {
+      id: 'gorilla', name: 'กอริลล่าเรียกพวก', cat: 'body', needs: 'pose', persons: 1, type: 'reps', target: 10,
+      how: 'กำหมัดทุบหน้าอกสลับซ้าย-ขวา ให้ครบ 10 ครั้ง',
+      tip: 'ยิ่งรัวยิ่งได้คะแนนเวลา',
+      repSound: 'drum',
+      titles: ['กอริลล่ามือไวประจำ{dept}', 'จ่าฝูงกอริลล่า{tier}'],
+      step(inp, mem, cal, k) {
+        const b = mainBody(inp); if (!b) return NO_BODY;
+        const r = gorillaStep(b, mem, k, inp.t);
+        r.anchor = b.head;
+        r.hint = 'ทุบอกรัว ๆ!';
+        return r;
+      }
+    },
+    {
+      id: 'wings', name: 'นกอินทรีปีกหัก', cat: 'body', needs: 'pose', persons: 1, type: 'reps', target: 6,
+      how: 'กางแขนสุด แล้วพับศอกเอามือมาแตะรักแร้ สลับไปมา 6 รอบ',
+      tip: 'ทำหน้าเลิ่กลั่กเพิ่มความฮา',
+      repSound: 'whoosh',
+      titles: ['นกอินทรีปีกหัก{tier}', 'ไก่ตื่นประจำ{dept}'],
+      step(inp, mem, cal, k) {
+        const b = mainBody(inp); if (!b) return NO_BODY;
+        const S = b.scale;
+        let open = 0, fold = 0;
+        for (const a of b.arms) {
+          const out = Math.sign(a.s.x - b.smid.x) || 1;
+          const eOut = (a.e.x - a.s.x) * out / S;
+          const wOut = (a.w.x - a.s.x) * out / S;
+          const wOff = a.w.v < 0.3 || a.w.rx < 0.01 || a.w.rx > 0.99;
+          const ang = angleAt(a.s, a.e, a.w);
+          const armpit = { x: a.s.x, y: a.s.y + 0.25 * S };
+          if ((!wOff && wOut > 0.95 * k && Math.abs(a.w.y - a.s.y) / S < 0.75 / k && ang > 115) || (wOff && a.e.v > 0.3 && eOut > 0.55 * k)) open++;
+          if (!wOff && d2(a.w, armpit) / S < 0.6 / k && eOut > 0.2 * k && ang < 85 / k) fold++;
+        }
+        mem.phase = mem.phase || 'open';
+        let reps = 0;
+        if (mem.phase === 'open' && open === 2) mem.phase = 'fold';
+        else if (mem.phase === 'fold' && fold === 2) { mem.phase = 'open'; reps = 1; }
+        const m = mem.phase === 'open' ? open / 2 : fold / 2;
+        return {
+          reps: reps, ok: m >= 1, metric: m, anchor: b.head,
+          hint: mem.phase === 'open' ? 'กางปีกออกให้สุด!' : 'พับศอก เอามือแตะรักแร้!'
+        };
+      }
+    },
+    {
+      id: 'matrix', name: 'สายลับหลบกระสุน', cat: 'body', needs: 'pose', persons: 1, type: 'hold', holdMs: 3000,
+      how: 'เอนตัวไปด้านหลัง/ด้านข้าง + ยกแขนสองข้างตั้งการ์ดบังหน้า ค้างไว้ 3 วินาที',
+      tip: 'สโลว์โมชันแบบหนังแอ็กชัน',
+      voice: { vowel: 'u', f0: [260, 110] },
+      titles: ['สายลับหลบงาน{tier}', 'นีโอประจำ{dept}'],
+      check(inp, cal, k) {
+        const b = mainBody(inp); if (!b) return NO_BODY;
+        const S = b.scale;
+        let guard = 0;
+        for (const a of b.arms) {
+          const up = (a.s.y - a.w.y) / S;
+          const nearFace = Math.abs(a.w.x - b.nose.x) / S < 1.1 / k;
+          const bent = angleAt(a.s, a.e, a.w) < 150;
+          if (a.w.v > 0.3 && up > 0.05 && nearFace && bent) guard++;
+        }
+        const roll = deg(Math.abs(Math.atan2(b.ls.y - b.rs.y, Math.abs(b.ls.x - b.rs.x) || 1e-6)));
+        let lean = roll;
+        if (b.hips) {
+          let torso = deg(Math.atan2(Math.abs(b.smid.x - b.hmid.x), Math.max(b.hmid.y - b.smid.y, 1e-6)));
+          const W = b.world;
+          if (W && W[11] && W[12] && W[23] && W[24]) {
+            const sx = (W[11].x + W[12].x) / 2, sy = (W[11].y + W[12].y) / 2, sz = (W[11].z + W[12].z) / 2;
+            const hx = (W[23].x + W[24].x) / 2, hy = (W[23].y + W[24].y) / 2, hz = (W[23].z + W[24].z) / 2;
+            torso = Math.max(torso, deg(Math.atan2(Math.hypot(sx - hx, sz - hz), Math.max(hy - sy, 1e-6))));
+          }
+          lean = Math.max(lean, torso);
+        }
+        const leanM = lean / (22 * k);
+        const guardM = guard === 2 ? 1 : guard * 0.4;
+        return {
+          metric: Math.min(guardM, leanM), anchor: b.head,
+          hint: guard < 2 ? 'ยกแขนสองข้างตั้งการ์ดบังหน้า!' : (leanM < 1 ? 'เอนตัวอีก! แบบหลบกระสุน' : 'ค้างไว้!'),
+          meters: [['การ์ด', guardM], ['เอนตัว', leanM]]
+        };
+      }
+    },
+    {
+      id: 'wave', name: 'โบกมือลาเงินเดือน', cat: 'body', needs: 'pose', persons: 1, type: 'reps', target: 8,
+      how: 'ยกมือเหนือหัวแล้วโบกซ้าย-ขวาแรง ๆ ให้ครบ 8 ครั้ง',
+      tip: 'สิ้นเดือนนี้เงินเดือนบินหมดแล้ว',
+      repSound: 'swish',
+      titles: ['แชมป์โบกมือลาเงินเดือน{tier}', 'ผู้ส่งเงินเดือนประจำ{dept}'],
+      step(inp, mem, cal, k) {
+        const b = mainBody(inp); if (!b) return NO_BODY;
+        const S = b.scale;
+        let arm = mem.side ? b.arms.find(a => a.side === mem.side) : null;
+        const raised = a => a && a.w.v > 0.3 && (b.nose.y - a.w.y) / S > 0.08;
+        if (!raised(arm)) {
+          arm = b.arms.filter(raised).sort((p, q) => p.w.y - q.w.y)[0] || null;
+          if (arm && arm.side !== mem.side) { mem.side = arm.side; mem.ext = null; mem.dir = 0; }
+        }
+        if (!arm) { mem.ext = null; mem.dir = 0; return { reps: 0, ok: false, metric: 0, anchor: b.head, hint: 'ยกมือขึ้นเหนือหัวแล้วโบก!' }; }
+        const amp = 0.3 / k * S, x = arm.w.x;
+        let reps = 0;
+        if (mem.ext === null || mem.ext === undefined) { mem.ext = x; mem.dir = 0; }
+        if (mem.dir === 0) {
+          if (x - mem.ext > amp) { mem.dir = 1; mem.ext = x; } else if (mem.ext - x > amp) { mem.dir = -1; mem.ext = x; }
+        } else if (mem.dir === 1) {
+          if (x > mem.ext) mem.ext = x; else if (mem.ext - x > amp) { mem.dir = -1; mem.ext = x; reps = 1; }
+        } else {
+          if (x < mem.ext) mem.ext = x; else if (x - mem.ext > amp) { mem.dir = 1; mem.ext = x; reps = 1; }
+        }
+        return { reps: reps, ok: true, metric: 1, anchor: b.head, hint: 'โบกแรง ๆ!' };
+      }
+    },
+
+    /* ===== หมวดท่าคู่ (2 คนในกล้องเดียว) ===== */
+    {
+      id: 'heart', name: 'หัวใจดวงโตที่ขาดหาย', cat: 'duo', needs: 'pose', persons: 2, type: 'hold', holdMs: 3000,
+      how: 'ยืนชิดกัน คนหนึ่งยกแขนซ้าย อีกคนยกแขนขวา โค้งเหนือหัวประกบเป็นหัวใจ ค้างไว้ 3 วินาที',
+      tip: 'เอียงหัวเข้าหากันด้วยจะหวานมาก',
+      voice: { vowel: 'o', f0: [200, 400] },
+      titles: ['คู่หูหัวใจ{tier}', 'คู่จิ้นประจำ{dept}'],
+      check(inp, cal, k) {
+        const two = twoBodies(inp);
+        if (!two) return { valid: false, metric: 0, hint: 'ต้องมี 2 คนอยู่ในกล้อง' };
+        const sides = two.map(b => {
+          const S = b.scale, s = [];
+          for (const a of b.arms) {
+            const overHead = a.w.v > 0.3 && (b.nose.y - a.w.y) / S > 0.05;
+            const elbowUp = a.e.y < a.s.y + 0.05 * S;
+            const ang = angleAt(a.s, a.e, a.w);
+            if (overHead && elbowUp && ang > 35 && ang < 170) s.push(Math.sign(a.e.x - b.nose.x) || 1);
+          }
+          return s;
+        });
+        const raised = (sides[0].length ? 1 : 0) + (sides[1].length ? 1 : 0);
+        const mirror = sides[0].some(a => sides[1].some(c => a === -c));
+        const avgS = (two[0].scale + two[1].scale) / 2;
+        const close = Math.abs(two[0].nose.x - two[1].nose.x) / avgS < 3.2 / k;
+        const m = raised / 2 * (raised === 2 && !mirror ? 0.6 : 1) * (close ? 1 : 0.7);
+        return {
+          metric: m,
+          anchor: { x: (two[0].head.x + two[1].head.x) / 2, y: Math.min(two[0].head.y, two[1].head.y) },
+          hint: raised < 2 ? 'ทั้งคู่ยกแขนโค้งเหนือหัว!' : (!mirror ? 'ยกแขนคนละข้าง ให้เป็นภาพสะท้อนกัน' : (!close ? 'ขยับเข้ามาชิดกันอีก!' : 'ค้างไว้! หวานมาก')),
+          meters: [['ยกแขน', raised / 2], ['สมมาตร', mirror ? 1 : 0], ['ชิดกัน', close ? 1 : 0]]
+        };
+      }
+    },
+    {
+      id: 'fusion', name: 'ผสานพลังฟิวชัน', cat: 'duo', needs: 'pose', persons: 2, type: 'hold', holdMs: 3000,
+      how: 'หันหน้าเข้าหากัน เหยียดแขนตรงขนานพื้น เอานิ้วชี้จิ้มชนกัน ค้างไว้ 3 วินาที',
+      tip: 'ตะโกน "ฟิว...ชั่น!" ในใจ',
+      voice: { vowel: 'u', f0: [140, 520] },
+      titles: ['ฟิวชันออฟฟิศ{tier}', 'นักรบผสานพลังประจำ{dept}'],
+      check(inp, cal, k) {
+        const two = twoBodies(inp);
+        if (!two) return { valid: false, metric: 0, hint: 'ต้องมี 2 คนอยู่ในกล้อง' };
+        const angT = 145 + (k - 1) * 60;
+        const parts = two.map((b, idx) => {
+          const other = two[1 - idx];
+          const toward = Math.sign(other.nose.x - b.nose.x) || 1;
+          let best = null;
+          for (const a of b.arms) {
+            const tip = a.i.v > 0.3 ? a.i : a.w;
+            const len = d2(a.s, a.e) + d2(a.e, a.w) || 1e-6;
+            const reach = (tip.x - a.s.x) * toward / len;
+            if (!best || reach > best.reach) best = { a: a, tip: tip, len: len, reach: reach };
+          }
+          const a = best.a;
+          const straight = angleAt(a.s, a.e, a.w) >= angT;
+          const level = deg(Math.abs(Math.atan2(a.w.y - a.s.y, Math.abs(a.w.x - a.s.x) || 1e-6))) < 25 / k;
+          const score = best.reach > 0.55 ? (straight ? 0.5 : 0.2) + (level ? 0.5 : 0.2) : 0;
+          return { tip: best.tip, len: best.len, score: score };
+        });
+        const touch = d2(parts[0].tip, parts[1].tip) / ((parts[0].len + parts[1].len) / 2) < 0.45 / k;
+        const avg = (parts[0].score + parts[1].score) / 2;
+        const m = touch ? avg : Math.min(avg, 0.85);
+        return {
+          metric: m,
+          anchor: { x: (parts[0].tip.rx + parts[1].tip.rx) / 2, y: (parts[0].tip.ry + parts[1].tip.ry) / 2 - 0.12 },
+          hint: avg < 0.9 ? 'เหยียดแขนตรง ขนานพื้น ชี้เข้าหากัน!' : (!touch ? 'ขยับเข้ามาให้นิ้วชนกัน!' : 'ค้างไว้! ฟิว...ชั่น!'),
+          meters: [['คนซ้าย', parts[0].score], ['คนขวา', parts[1].score], ['นิ้วชน', touch ? 1 : 0]]
+        };
+      }
+    },
+    {
+      id: 'gorilla2', name: 'แก๊งกอริลล่าเรียกพวก', cat: 'duo', needs: 'pose', persons: 2, type: 'reps', target: 16,
+      how: 'ทั้งคู่ทุบอกพร้อมกัน รวมกันให้ครบ 16 ครั้ง (ต้องช่วยกันทั้งสองคน)',
+      tip: 'คนละ 8 ครั้งพอดี ห้ามให้คนเดียวแบก',
+      repSound: 'drum',
+      titles: ['แก๊งกอริลล่า{tier}', 'ฝูงกอริลล่าประจำ{dept}'],
+      step(inp, mem, cal, k) {
+        const bs = (inp && inp.bodies || []).filter(b => b.ok).sort((a, b) => b.scale - a.scale).slice(0, 2)
+          .sort((a, b) => a.nose.x - b.nose.x);
+        if (!bs.length) return NO_BODY;
+        mem.m0 = mem.m0 || {}; mem.m1 = mem.m1 || {}; mem.c = mem.c || [0, 0];
+        let reps = 0, ok = false;
+        bs.forEach((b, i) => {
+          const r = gorillaStep(b, i === 0 ? mem.m0 : mem.m1, k, inp.t);
+          if (r.ok) ok = true;
+          const room = Math.max(0, 10 - mem.c[i]);            // คนละไม่เกิน 10 → ต้องช่วยกัน
+          const add = Math.min(r.reps, room);
+          mem.c[i] += add; reps += add;
+        });
+        return {
+          reps: reps, ok: ok, metric: ok ? 1 : 0,
+          anchor: { x: bs.reduce((s, b) => s + b.head.x, 0) / bs.length, y: Math.min.apply(null, bs.map(b => b.head.y)) },
+          hint: bs.length < 2 ? 'ต้องมี 2 คนอยู่ในกล้อง' : ('ซ้าย ' + mem.c[0] + ' • ขวา ' + mem.c[1])
+        };
+      }
+    }
+  ];
+  const BY_ID = {};
+  POSES.forEach(p => { BY_ID[p.id] = p; });
+
+  /** ตัวติดตามความคืบหน้าของ 1 ด่าน */
+  function createTracker(pose, opt) {
+    opt = opt || {};
+    const k = opt.k || 1, cal = opt.cal || {};
+    const st = { progress: 0, reps: 0, ok: false, metric: 0, done: false, bonus: null, justRep: false, valid: true, hint: '', anchor: null, meters: null, mem: {} };
+    return {
+      state: st,
+      update(inp, dtMs) {
+        if (st.done) return st;
+        dtMs = clamp(dtMs || 0, 0, 200);
+        let r;
+        if (pose.type === 'hold') {
+          r = (inp ? pose.check(inp, cal, k) : null) || { valid: false, metric: 0 };
+          const m = r.metric || 0;
+          const pass = r.valid !== false && (st.ok ? m >= 0.9 : m >= 1);
+          st.ok = pass; st.metric = m; st.justRep = false;
+          if (pass) st.progress = Math.min(1, st.progress + dtMs / pose.holdMs);
+          else st.progress = Math.max(0, st.progress - dtMs / 700);
+          if (pass && r.bonus) st.bonus = r.bonus;
+          if (st.progress >= 1) st.done = true;
+        } else {
+          r = (inp ? pose.step(inp, st.mem, cal, k) : null) || { valid: false, metric: 0, reps: 0 };
+          st.metric = r.metric || 0; st.ok = !!r.ok;
+          const add = r.reps || 0;
+          st.justRep = add > 0;
+          st.reps = Math.min(pose.target, st.reps + add);
+          st.progress = st.reps / pose.target;
+          if (st.reps >= pose.target) st.done = true;
+        }
+        st.valid = r.valid !== false;
+        st.hint = r.hint || '';
+        st.anchor = r.anchor || null;
+        st.meters = r.meters || null;
+        return st;
+      }
+    };
+  }
+
+  /* ---------------- สุ่มท่าแบบกำหนด seed ---------------- */
+  function hashStr(s) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function rng(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(arr, rand) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  /** เลือก n ท่าเดี่ยว สลับหน้า/ตัว ไม่ซ้ำ (เมื่อ n ≤ จำนวนท่า) */
+  function pickSolo(n, seed) {
+    const rand = rng(seed);
+    const face = shuffle(POSES.filter(p => p.cat === 'face').map(p => p.id), rand);
+    const body = shuffle(POSES.filter(p => p.cat === 'body').map(p => p.id), rand);
+    const out = [];
+    let useFace = rand() < 0.5, fi = 0, bi = 0;
+    while (out.length < n) {
+      if (fi >= face.length && bi >= body.length) { fi = 0; bi = 0; }
+      if ((useFace && fi < face.length) || bi >= body.length) out.push(face[fi++]);
+      else out.push(body[bi++]);
+      useFace = !useFace;
+    }
+    return out;
+  }
+
+  root.PoseLib = {
+    POSES: POSES, BY_ID: BY_ID, DIFF: DIFF, DEF_FACE: DEF_FACE,
+    faceFeatures: faceFeatures, calibrateFace: calibrateFace, bodyFrame: bodyFrame,
+    createTracker: createTracker, pickSolo: pickSolo, hashStr: hashStr, rng: rng, shuffle: shuffle,
+    angleAt: angleAt
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+/*</POSE-LIB>*/
+</script>
+<script type="module">
+/* ============================================================
+ *  ฮาท่าเทพ — แอปหลัก (ES module)
+ *  โครง: 1 ตั้งค่า | 2 เครื่องมือ | 3 เสียง | 4 ภาพการ์ตูน | 5 API/เวลา
+ *        6 กล้อง+AI | 7 วาดทับภาพ | 8 สแกนเริ่มต้น | 9 เอนจินเกม
+ *        10 ห้องแข่ง | 11 ผลลัพธ์+บัตร+GIF | 12 ตารางอันดับ | 13 หน้าจอ/บูต
+ *  จุดต่อยอด: ค้นหา "ต่อยอด:"
+ * ============================================================ */
+const PL = window.PoseLib;
+
+/* ==================== 1) ตั้งค่า ==================== */
+const API_URL = '';   // ← วาง URL เว็บแอป Google Apps Script (ลงท้าย /exec) — เว้นว่าง = โหมดทดลอง เก็บคะแนนในเครื่อง
+const APP_VERSION = '1.0.0';
+const MP_VER = '1.0.1';
+const CDN = {
+  vision: `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}/vision_bundle.mjs`,
+  wasm: `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}/wasm`,
+  gif: 'https://cdn.jsdelivr.net/npm/gifenc@1.0.3/dist/gifenc.esm.js',
+  qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/dist/qrcode.mjs'
+};
+const MODELS = {
+  face: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+  pose: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task'
+};
+const Q = new URLSearchParams(location.search);
+const MOCK = Q.has('mock') ? (Q.get('mock') || 'auto') : null;           // ทดสอบโดยไม่ใช้กล้อง: ?mock / ?mock=fail / ?mock=keys
+const SPEED = MOCK && +Q.get('speed') > 0 ? +Q.get('speed') : 1;           // เร่งเวลาเฉพาะโหมดทดสอบ
+const T = { intro: 2600 / SPEED, countdown: 3000 / SPEED, action: 10000 / SPEED, outro: 2400 / SPEED };   // เวลาแต่ละช่วงของ 1 ด่าน (ms)
+const ROUND_MS = T.intro + T.countdown + T.action + T.outro;
+const FIRST_BONUS = 50;                                                  // โบนัสคนแรกที่ผ่านในห้องแข่ง
+const DUO_POSES = ['heart', 'fusion', 'gorilla2'];                        // ต่อยอด: เพิ่มท่าคู่
+const ATTACK_ITEMS = [['🍅', 'มะเขือเทศ'], ['🩴', 'รองเท้าแตะ'], ['🥚', 'ไข่'], ['🍌', 'กล้วย'], ['🐟', 'ปลาทู'], ['🎂', 'เค้ก'], ['🧻', 'ทิชชู่']];
+const POSITIONS = [
+  'ผู้พิทักษ์ความตลกประจำออฟฟิศ', 'เจ้าหน้าที่ปฏิบัติการคลายเครียด ระดับชำนาญการพิเศษ', 'ผู้อำนวยการกองทำหน้าตลก',
+  'นักวิเคราะห์ความฮาอาวุโส', 'หัวหน้าฝ่ายอ้าปากค้างและกิจการพิเศษ', 'ผู้เชี่ยวชาญด้านทำท่าแปลก (ระดับ 11)',
+  'ที่ปรึกษาอาวุโสด้านมุกแป้ก', 'เจ้าพนักงานสันทนาการ ชั้นพิเศษ', 'ผู้จัดการฝ่ายยิ้มสู้ปัญหา', 'ประธานชมรมคนหน้าเด้ง'
+];
+const API_KIND = Q.get('api') === 'mock' ? 'mock' : (API_URL ? 'gas' : 'local');
+
+/* ==================== 2) เครื่องมือ ==================== */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = n => Number(n || 0).toLocaleString('th-TH');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const TH_MON = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+function thaiDate(key) { if (!key) return ''; const p = key.split('-'); return `${+p[2]} ${TH_MON[+p[1] - 1]} ${+p[0] + 543}`; }
+function bkkKey(ms) { return new Date((ms || Date.now()) + 7 * 3600e3).toISOString().slice(0, 10); }
+function keyUtc(k) { const p = k.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+function addDays(k, n) { return new Date(keyUtc(k) + n * 864e5).toISOString().slice(0, 10); }
+function weekStart(k) { const dow = new Date(keyUtc(k)).getUTCDay(); return addDays(k, -((dow + 6) % 7)); }
+function uid(n = 12) { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a, b => 'abcdefghjkmnpqrstuvwxyz23456789'[b % 31]).join(''); }
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* โหมดส่วนตัว */ } }
+};
+const sstore = {
+  get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } }
+};
+let toastTimer = 0;
+function toast(msg, ms = 2600) {
+  const host = $('#toastHost');
+  host.innerHTML = `<div class="toast">${esc(msg)}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { host.innerHTML = ''; }, ms);
+}
+function initials(name) { return String(name || '?').trim().slice(0, 1).toUpperCase() || '?'; }
+function deptLabel(d) { d = String(d || '').trim(); if (!d) return 'ออฟฟิศ'; return /^(แผนก|ฝ่าย|กลุ่ม|ส่วน|งาน|กอง|สำนัก)/.test(d) ? d : 'แผนก' + d; }
+
+/* ==================== 3) เสียง (สังเคราะห์สดด้วย Web Audio — ไม่ใช้ไฟล์) ==================== */
+const Sfx = (() => {
+  let ac = null, master = null, muted = store.get('fpb_muted', false), nbuf = null;
+  const FORM = {
+    a: [[800, 1], [1150, .6], [2900, .2]], i: [[300, 1], [2300, .5], [3000, .25]], u: [[320, 1], [800, .45], [2400, .1]],
+    e: [[500, 1], [1800, .5], [2600, .2]], o: [[500, 1], [900, .5], [2600, .1]], m: [[250, 1], [900, .12], [2200, .04]]
+  };
+  function ctx() {
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ac = new AC();
+      master = ac.createGain(); master.gain.value = muted ? 0 : 0.9;
+      const comp = ac.createDynamicsCompressor();
+      master.connect(comp); comp.connect(ac.destination);
+    }
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  }
+  function noiseSrc() {
+    if (!nbuf) {
+      nbuf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate);
+      const d = nbuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const s = ac.createBufferSource(); s.buffer = nbuf; s.loop = true; return s;
+  }
+  function pluck(g, t, a, peak, dur) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.0002), t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + dur);
+  }
+  function sustain(g, t, a, vol, dur, rel = 0.08) {
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + a);
+    g.gain.setValueAtTime(vol, Math.max(t + a, t + dur - rel));
+    g.gain.linearRampToValueAtTime(0, t + dur);
+  }
+  function tone(freq, t, dur, o = {}) {
+    const osc = ac.createOscillator(); osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    const g = ac.createGain(); pluck(g, t, o.a || 0.005, o.vol || 0.3, dur);
+    osc.connect(g).connect(master); osc.start(t); osc.stop(t + dur + 0.1);
+  }
+  function burst(t, dur, o = {}) {
+    const n = noiseSrc(); const f = ac.createBiquadFilter();
+    f.type = o.type || 'bandpass'; f.frequency.setValueAtTime(o.freq || 1000, t);
+    if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    f.Q.value = o.q || 1;
+    const g = ac.createGain(); pluck(g, t, o.a || 0.004, o.vol || 0.3, dur);
+    n.connect(f).connect(g).connect(master); n.start(t, Math.random()); n.stop(t + dur + 0.1);
+  }
+  /** เสียงคนพูดสระ (formant) — ใช้ทำเสียง "อ้าาา", เสียงแพะ, เสียงเชียร์ */
+  function voice(vowel, t, dur, f0a, f0b, o = {}) {
+    const osc = ac.createOscillator(); osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(f0a, t); osc.frequency.linearRampToValueAtTime(f0b, t + dur);
+    const lfo = ac.createOscillator(); lfo.frequency.value = o.vib || 5.5;
+    const lg = ac.createGain(); lg.gain.value = o.vibDepth || f0a * 0.03;
+    lfo.connect(lg).connect(osc.frequency);
+    const out = ac.createGain(); sustain(out, t, 0.03, o.vol || 0.3, dur);
+    let dest = out;
+    if (o.trem) {
+      const tg = ac.createGain(); tg.gain.value = 0.6;
+      const tl = ac.createOscillator(); tl.frequency.value = o.trem;
+      const td = ac.createGain(); td.gain.value = 0.4; tl.connect(td).connect(tg.gain); tl.start(t); tl.stop(t + dur + 0.1);
+      out.connect(tg); dest = tg;
+    }
+    (FORM[vowel] || FORM.a).forEach(([f, gv]) => {
+      const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 7;
+      const g = ac.createGain(); g.gain.value = gv * 4; osc.connect(bp).connect(g).connect(out);
+    });
+    dest.connect(master);
+    osc.start(t); lfo.start(t); osc.stop(t + dur + 0.1); lfo.stop(t + dur + 0.1);
+  }
+  const api = {
+    get muted() { return muted; },
+    unlock() { ctx(); },
+    setMuted(m) { muted = m; store.set('fpb_muted', m); if (master) master.gain.setTargetAtTime(m ? 0 : 0.9, ac.currentTime, 0.02); },
+    ui() { if (!ctx()) return; tone(880, ac.currentTime, 0.06, { vol: 0.12, type: 'triangle' }); },
+    /** กลองรัวเร่งจังหวะ + บี๊บ 3-2-1 + แตร START */
+    countdown(ms = 3000) {
+      if (!ctx()) return;
+      const t0 = ac.currentTime, total = ms / 1000;
+      let t = 0, gap = 0.42, v = 0.35;
+      while (t < total - 0.05) {
+        tone(150, t0 + t, 0.16, { to: 45, vol: v }); burst(t0 + t, 0.03, { type: 'highpass', freq: 3000, vol: 0.08 });
+        t += gap; gap = Math.max(0.06, gap * 0.86); v = Math.min(0.9, v + 0.03);
+      }
+      for (let i = 0; i < 3; i++) tone(660, t0 + i * total / 3, 0.12, { vol: 0.25, type: 'square' });
+      [523, 659, 784, 1047].forEach(f => tone(f, t0 + total, 0.5, { vol: 0.14, type: 'square' }));
+      burst(t0 + total, 1.1, { type: 'highpass', freq: 5000, vol: 0.25 });
+    },
+    tick() { if (!ctx()) return; tone(1300, ac.currentTime, 0.04, { vol: 0.12, type: 'square' }); },
+    whooshIn() { if (!ctx()) return; burst(ac.currentTime, 0.35, { freq: 300, to: 2600, q: 1.5, vol: 0.35 }); },
+    rep(kind) {
+      if (!ctx()) return;
+      const t = ac.currentTime;
+      if (kind === 'drum') { tone(140, t, 0.2, { to: 60, vol: 0.8 }); burst(t, 0.07, { type: 'lowpass', freq: 500, vol: 0.4 }); }
+      else if (kind === 'swish') burst(t, 0.16, { freq: 2600, to: 600, q: 1.3, vol: 0.5 });
+      else burst(t, 0.18, { freq: 500, to: 2600, q: 1.2, vol: 0.5 });          // ฟึ่บ!
+    },
+    /** เสียงลากยาวตามแถบพลัง */
+    holdVoice(cfg) {
+      if (!ctx() || !cfg) return { update() {}, stop() {} };
+      const t = ac.currentTime;
+      const osc = ac.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = cfg.f0[0];
+      const lfo = ac.createOscillator(); lfo.frequency.value = 5.5;
+      const lg = ac.createGain(); lg.gain.value = cfg.f0[0] * 0.035; lfo.connect(lg).connect(osc.frequency);
+      const out = ac.createGain(); out.gain.value = 0;
+      (FORM[cfg.vowel] || FORM.a).forEach(([f, gv]) => {
+        const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 7;
+        const g = ac.createGain(); g.gain.value = gv * 4; osc.connect(bp).connect(g).connect(out);
+      });
+      out.connect(master); osc.start(t); lfo.start(t);
+      let stopped = false;
+      return {
+        update(p, on) {
+          if (stopped) return;
+          const now = ac.currentTime;
+          osc.frequency.setTargetAtTime(cfg.f0[0] + (cfg.f0[1] - cfg.f0[0]) * p, now, 0.06);
+          out.gain.setTargetAtTime(on ? 0.26 : 0, now, on ? 0.04 : 0.07);
+        },
+        stop() {
+          if (stopped) return; stopped = true;
+          const now = ac.currentTime; out.gain.setTargetAtTime(0, now, 0.03);
+          osc.stop(now + 0.3); lfo.stop(now + 0.3);
+        }
+      };
+    },
+    shutter() { if (!ctx()) return; const t = ac.currentTime; burst(t, 0.035, { type: 'highpass', freq: 2000, vol: 0.6 }); burst(t + 0.07, 0.05, { freq: 1200, q: 2, vol: 0.45 }); },
+    success() {
+      if (!ctx()) return;
+      const t = ac.currentTime;
+      [1318, 1760, 2093, 2637].forEach((f, i) => tone(f, t + i * 0.06, 0.28, { vol: 0.2, type: 'triangle' }));   // วิ้งค์!
+      api.shutter();
+      for (let i = 0; i < 70; i++) {                                                                    // เสียงปรบมือ
+        const at = t + 0.15 + Math.pow(Math.random(), 1.6) * 1.5;
+        burst(at, 0.03 + Math.random() * 0.03, { freq: 1100 + Math.random() * 1400, q: 1.4, vol: 0.08 + Math.random() * 0.16 });
+      }
+      for (let i = 0; i < 5; i++) { const f = 170 + Math.random() * 160; voice('e', t + 0.12 + i * 0.02, 0.7, f, f * 1.3, { vol: 0.06 }); } // เฮ!
+    },
+    bonus() { if (!ctx()) return; const t = ac.currentTime; tone(1568, t, 0.12, { vol: 0.2, type: 'triangle' }); tone(2093, t + 0.1, 0.2, { vol: 0.2, type: 'triangle' }); },
+    fail() {
+      if (!ctx()) return;
+      const t = ac.currentTime, pick = Math.floor(Math.random() * 3);
+      if (pick === 0) {                                  // แตรแป่ว ตึ่ง โป๊ะ
+        [[233, 0.36], [220, 0.36], [208, 0.36], [196, 1.1]].reduce((at, [f, d], i) => {
+          const osc = ac.createOscillator(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(f, at);
+          if (i === 3) { const l = ac.createOscillator(); l.frequency.value = 6; const lg = ac.createGain(); lg.gain.value = 7; l.connect(lg).connect(osc.frequency); l.start(at); l.stop(at + d); }
+          const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 6;
+          lp.frequency.setValueAtTime(350, at); lp.frequency.linearRampToValueAtTime(1500, at + d * 0.35); lp.frequency.linearRampToValueAtTime(500, at + d);
+          const g = ac.createGain(); sustain(g, at, 0.02, 0.3, d, 0.12);
+          osc.connect(lp).connect(g).connect(master); osc.start(at); osc.stop(at + d + 0.05);
+          return at + d;
+        }, t);
+      } else if (pick === 1) {                           // แพะร้อง แบ๊ะะะ
+        voice('e', t, 0.95, 480, 360, { vib: 9, vibDepth: 30, trem: 16, vol: 0.32 });
+      } else {                                           // ไก่ขันหลงคีย์
+        [[520, 900, 0.12], [900, 700, 0.1], [620, 980, 0.13], [980, 430, 0.45]].reduce((at, [a, b, d]) => { voice('a', at, d, a, b, { vol: 0.26, vib: 12, vibDepth: 25 }); return at + d + 0.04; }, t);
+      }
+    },
+    splat() { if (!ctx()) return; const t = ac.currentTime; burst(t, 0.28, { type: 'lowpass', freq: 900, to: 180, vol: 0.9 }); tone(95, t, 0.16, { to: 40, vol: 0.5 }); },
+    fanfare() {
+      if (!ctx()) return;
+      const t = ac.currentTime;
+      [[523, 0], [659, 0.12], [784, 0.24], [1047, 0.4]].forEach(([f, d]) => tone(f, t + d, 0.3, { vol: 0.18, type: 'square' }));
+      [523, 659, 784, 1047].forEach(f => tone(f, t + 0.62, 0.9, { vol: 0.1, type: 'triangle' }));
+    }
+  };
+  return api;
+})();
+
+/* ==================== 4) ภาพการ์ตูนต้นแบบ (SVG วาดเอง) ==================== */
+const Art = (() => {
+  const SK = '#ffd3a1', INK = '#26190f', SHIRT = '#2b56c8', PANTS = '#1b2748';
+  const r = a => a * Math.PI / 180;
+  const f1 = n => Math.round(n * 10) / 10;
+  function arm(x, y, a1, a2, o = {}) {
+    const l1 = o.l1 || 28, l2 = o.l2 || 26;
+    const ex = x + l1 * Math.cos(r(a1)), ey = y + l1 * Math.sin(r(a1));
+    const hx = ex + l2 * Math.cos(r(a2)), hy = ey + l2 * Math.sin(r(a2));
+    return `<path d="M${f1(x)} ${f1(y)}L${f1(ex)} ${f1(ey)}L${f1(hx)} ${f1(hy)}" stroke="${INK}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M${f1(x)} ${f1(y)}L${f1(ex)} ${f1(ey)}" stroke="${o.sleeve || SHIRT}" stroke-width="11" stroke-linecap="round"/>` +
+      `<path d="M${f1(ex)} ${f1(ey)}L${f1(hx)} ${f1(hy)}" stroke="${SK}" stroke-width="9" stroke-linecap="round"/>` +
+      `<circle cx="${f1(hx)}" cy="${f1(hy)}" r="7.5" fill="${SK}" stroke="${INK}" stroke-width="2.5"/>` + (o.hand ? o.hand(hx, hy) : '');
+  }
+  const eye = (x, y, rr = 4.5) => `<ellipse cx="${x}" cy="${y}" rx="${rr * 0.8}" ry="${rr}" fill="${INK}"/><circle cx="${x + 1.2}" cy="${y - 1.5}" r="1.3" fill="#fff"/>`;
+  const bigEye = (x, y, px, py, rr = 8) => `<circle cx="${x}" cy="${y}" r="${rr}" fill="#fff" stroke="${INK}" stroke-width="2.2"/><circle cx="${x + px}" cy="${y + py}" r="${rr * 0.42}" fill="${INK}"/>`;
+  const FACES = {
+    happy: () => eye(89, 70) + eye(111, 70) + `<path d="M88 86 Q100 97 112 86" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="82" cy="82" r="4" fill="#ff8fa8" opacity=".6"/><circle cx="118" cy="82" r="4" fill="#ff8fa8" opacity=".6"/>`,
+    scream: () => bigEye(88, 66, 0, 0, 9) + bigEye(112, 66, 0, 0, 9) + `<path d="M78 52 q8 -7 16 -2 M106 50 q8 -5 16 2" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="100" cy="91" rx="9" ry="14" fill="#5a1020" stroke="${INK}" stroke-width="2.5"/><ellipse cx="100" cy="99" rx="5" ry="4" fill="#ff6b8a"/>`,
+    puff: () => `<circle cx="78" cy="84" r="13" fill="${SK}" stroke="${INK}" stroke-width="2.5"/><circle cx="122" cy="84" r="13" fill="${SK}" stroke="${INK}" stroke-width="2.5"/><circle cx="78" cy="86" r="6" fill="#ff8fa8" opacity=".55"/><circle cx="122" cy="86" r="6" fill="#ff8fa8" opacity=".55"/>` + bigEye(90, 67, 3, 1, 6.5) + bigEye(110, 67, -3, 1, 6.5) + `<circle cx="100" cy="89" r="3.5" fill="#c2415e" stroke="${INK}" stroke-width="2"/>`,
+    grin: () => `<path d="M83 70 q6 -6 12 0" stroke="${INK}" stroke-width="3.2" fill="none" stroke-linecap="round"/>` + eye(111, 70) + `<path d="M103 57 q9 -9 17 -2" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M80 82 Q100 106 120 82 Z" fill="#fff" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M84 86 L116 86 M90 83 L90 93 M96 84 L96 97 M102 84 L102 97 M108 83 L108 94 M113 83 L113 90" stroke="${INK}" stroke-width="1.3"/>`,
+    gorilla: () => `<path d="M80 58 L96 64 M120 58 L104 64" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>` + eye(89, 70, 4) + eye(111, 70, 4) + `<ellipse cx="100" cy="90" rx="13" ry="9" fill="#5a1020" stroke="${INK}" stroke-width="2.5"/><path d="M89 85 L111 85" stroke="#fff" stroke-width="3"/><circle cx="96" cy="78" r="1.6" fill="${INK}"/><circle cx="104" cy="78" r="1.6" fill="${INK}"/>`,
+    panic: () => bigEye(89, 68, 4, 0, 7.5) + bigEye(111, 68, 4, 0, 7.5) + `<path d="M86 90 l4 -4 l4 4 l4 -4 l4 4 l4 -4 l4 4" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linejoin="round"/><path d="M128 56 q5 8 0 12 q-5 -4 0 -12" fill="#7fd3ff" stroke="${INK}" stroke-width="1.5"/>`,
+    cool: () => `<rect x="80" y="62" width="17" height="11" rx="4" fill="${INK}"/><rect x="103" y="62" width="17" height="11" rx="4" fill="${INK}"/><path d="M97 66 L103 66" stroke="${INK}" stroke-width="3"/><path d="M83 64 l5 0" stroke="#fff" stroke-width="1.5" opacity=".7"/><path d="M92 88 Q102 92 110 85" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    duck: () => `<path d="M83 70 q6 3 12 0 M105 70 q6 3 12 0" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M84 66 l10 0 M106 66 l10 0" stroke="${INK}" stroke-width="2" opacity=".6"/><ellipse cx="101" cy="90" rx="11" ry="8" fill="#ff5c8a" stroke="${INK}" stroke-width="2.5"/><path d="M91 90 Q101 93 111 90" stroke="${INK}" stroke-width="1.6" fill="none"/>`,
+    puppy: () => `<path d="M80 60 L95 55 M120 60 L105 55" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><ellipse cx="89" cy="70" rx="8" ry="10" fill="${INK}"/><ellipse cx="111" cy="70" rx="8" ry="10" fill="${INK}"/><circle cx="92" cy="66" r="3" fill="#fff"/><circle cx="114" cy="66" r="3" fill="#fff"/><circle cx="87" cy="74" r="1.6" fill="#fff"/><circle cx="109" cy="74" r="1.6" fill="#fff"/><path d="M92 93 Q100 87 108 93" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    cry: () => `<path d="M83 70 q6 -5 12 0 M105 70 q6 -5 12 0" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M86 73 q-3 14 1 26 M114 73 q3 14 -1 26" stroke="#5ec8ff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/><path d="M86 84 Q100 102 114 84 Z" fill="#5a1020" stroke="${INK}" stroke-width="2.5"/>`,
+    shout: () => `<path d="M80 60 L95 64 M120 60 L105 64" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/>` + eye(89, 70) + eye(111, 70) + `<path d="M88 84 L112 84 Q108 100 100 100 Q92 100 88 84 Z" fill="#5a1020" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>`
+  };
+  /** ตัวละครพนักงานออฟฟิศ 1 ตัว: L = แขนซ้ายของตัวละคร (ด้านขวาของภาพ) */
+  function fig(o) {
+    const L = o.L || [80, 88], R = o.R || [100, 92];
+    const armL = arm(122, 118, L[0], L[1], o.armL || {}), armR = arm(78, 118, R[0], R[1], o.armR || {});
+    const body = `<path d="M88 170 L86 203 M112 170 L114 203" stroke="${INK}" stroke-width="15" stroke-linecap="round"/><path d="M88 170 L86 203 M112 170 L114 203" stroke="${PANTS}" stroke-width="10" stroke-linecap="round"/>` +
+      `<ellipse cx="84" cy="206" rx="10" ry="5" fill="${INK}"/><ellipse cx="116" cy="206" rx="10" ry="5" fill="${INK}"/>` +
+      `<path d="M76 112 Q100 102 124 112 L121 172 Q100 177 79 172 Z" fill="${SHIRT}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` +
+      `<path d="M92 106 L100 116 L108 106" fill="#fff" stroke="${INK}" stroke-width="2"/><path d="M100 115 L95 122 L100 150 L105 122 Z" fill="#f5c542" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+    const head = `<circle cx="69" cy="74" r="6" fill="${SK}" stroke="${INK}" stroke-width="2.5"/><circle cx="131" cy="74" r="6" fill="${SK}" stroke="${INK}" stroke-width="2.5"/>` +
+      `<circle cx="100" cy="72" r="31" fill="${SK}" stroke="${INK}" stroke-width="3"/>` +
+      `<path d="M70 66 Q70 38 100 40 Q130 38 130 66 Q122 52 108 55 Q100 46 88 54 Q76 54 70 66 Z" fill="${o.hair || '#3a2615'}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    const face = (FACES[o.face] || FACES.happy)();
+    const s = o.s || 1, X = o.x == null ? 100 : o.x;
+    const tf = `translate(${f1(X - 100 * s)} ${f1((1 - s) * 212)}) scale(${s})` + (o.tilt ? ` rotate(${o.tilt} 100 205)` : '');
+    const back = o.armsBack ? armL + armR : '';
+    const front = o.armsBack ? '' : armL + armR;
+    return `<g transform="${tf}">${back}${body}${head}${face}${front}${o.extra || ''}</g>`;
+  }
+  const wrap = (bg, inner) => `<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" role="img"><rect x="4" y="4" width="192" height="212" rx="26" fill="${bg}"/><circle cx="160" cy="44" r="46" fill="#fff" opacity=".07"/><circle cx="30" cy="190" r="36" fill="#fff" opacity=".06"/>${inner}</svg>`;
+  const txt = (x, y, s, size = 16, col = '#fff', rot = 0) => `<text x="${x}" y="${y}" font-family="Kanit,sans-serif" font-weight="800" font-size="${size}" fill="${col}" stroke="${INK}" stroke-width="3" paint-order="stroke" text-anchor="middle" transform="rotate(${rot} ${x} ${y})">${s}</text>`;
+  const BG = { face: '#ff7aa2', body: '#39a9e0', duo: '#9b6cf0' };
+  const ART = {
+    jawdrop: () => wrap(BG.face, `<g opacity=".75"><path d="M100 10 q-16 0 -16 18 l0 16 l6 -5 l5 5 l5 -5 l5 5 l5 -5 l6 5 l0 -16 q0 -18 -16 -18 Z" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="94" cy="24" r="2.5" fill="${INK}"/><circle cx="106" cy="24" r="2.5" fill="${INK}"/><ellipse cx="100" cy="32" rx="3" ry="4" fill="${INK}"/></g>` +
+      fig({ face: 'scream', L: [-20, -70], R: [200, 250] }) + txt(40, 58, 'อ้าาา', 17, '#fff', -12)),
+    puffer: () => wrap(BG.face, fig({ face: 'puff', L: [60, 150], R: [120, 30] }) + txt(160, 40, 'ปุ๊ง!', 17, '#ffe28a', 10) + `<circle cx="40" cy="40" r="5" fill="#bfe9ff" stroke="${INK}" stroke-width="1.5"/><circle cx="30" cy="58" r="3.5" fill="#bfe9ff" stroke="${INK}" stroke-width="1.5"/>`),
+    grin32: () => wrap(BG.face, fig({ face: 'grin', L: [50, -80], armL: { hand: (x, y) => `<rect x="${f1(x - 3)}" y="${f1(y - 17)}" width="7" height="12" rx="3.5" fill="${SK}" stroke="${INK}" stroke-width="2.2"/>` } }) +
+      `<path d="M150 30 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 Z" fill="#fff"/><path d="M42 44 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 Z" fill="#fff"/>`),
+    duckface: () => wrap(BG.face, fig({ face: 'duck', L: [60, 150], R: [-150, -140], armR: { hand: (x, y) => `<rect x="${f1(x - 11)}" y="${f1(y - 22)}" width="16" height="26" rx="4" fill="#222" stroke="${INK}" stroke-width="2" transform="rotate(-20 ${f1(x)} ${f1(y)})"/>` } }) + txt(155, 40, '#เซลฟี่', 15, '#fff', 8)),
+    puppy: () => wrap(BG.face, fig({ face: 'puppy', L: [110, -115], R: [70, -65] }) + `<path d="M150 36 q8 -12 16 0 q8 -12 16 0 q0 12 -16 22 q-16 -10 -16 -22 Z" fill="#ffd0dd" stroke="${INK}" stroke-width="2" transform="scale(.8) translate(20 10)"/>` + txt(46, 44, 'ขอขึ้น…', 14, '#fff', -8)),
+    gorilla: () => wrap(BG.body, fig({ face: 'gorilla', L: [100, -140], R: [80, -40], hair: '#222' }) +
+      `<path d="M60 126 q-8 6 0 12 M52 122 q-12 10 0 20 M140 126 q8 6 0 12 M148 122 q12 10 0 20" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>` + txt(40, 40, 'ตุ้บ!', 18, '#ffe28a', -14) + txt(162, 50, 'ตุ้บ!', 18, '#ffe28a', 12)),
+    wings: () => wrap(BG.body, fig({ face: 'panic', L: [0, 175], R: [180, 5], armL: { l1: 30 }, armR: { l1: 30 } }) +
+      `<path d="M136 126 l6 14 l6 -12 l6 13 l6 -11 M64 126 l-6 14 l-6 -12 l-6 13 l-6 -11" stroke="#fff" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>` + txt(100, 30, 'กระพือ!', 16, '#ffe28a')),
+    matrix: () => wrap(BG.body, `<g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"><path d="M150 70 L186 70"/><path d="M146 96 L190 96"/><path d="M156 122 L188 122"/></g><g fill="#ffe28a" stroke="${INK}" stroke-width="1.5"><rect x="140" y="66" width="14" height="8" rx="4"/><rect x="136" y="92" width="14" height="8" rx="4"/><rect x="146" y="118" width="14" height="8" rx="4"/></g>` +
+      fig({ face: 'cool', tilt: -24, L: [-50, -150], R: [230, 330], hair: '#111' })),
+    wave: () => wrap(BG.body, fig({ face: 'cry', L: [-78, -95], armL: { l1: 30, l2: 30 } }) +
+      `<path d="M144 40 q10 8 0 18 M154 34 q14 12 0 30" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+      `<g transform="rotate(-15 170 70)"><rect x="156" y="62" width="30" height="16" rx="3" fill="#8fe3a8" stroke="${INK}" stroke-width="2"/><text x="171" y="75" font-size="11" text-anchor="middle" font-family="Kanit" font-weight="700" fill="${INK}">฿</text></g>` +
+      `<g transform="rotate(12 30 50)"><rect x="16" y="42" width="30" height="16" rx="3" fill="#8fe3a8" stroke="${INK}" stroke-width="2"/><text x="31" y="55" font-size="11" text-anchor="middle" font-family="Kanit" font-weight="700" fill="${INK}">฿</text></g>` + txt(52, 30, 'บ๊ายบาย', 14, '#fff', -8)),
+    heart: () => wrap(BG.duo, `<path d="M100 196 C40 150 10 110 22 70 C34 30 84 28 100 70 C116 28 166 30 178 70 C190 110 160 150 100 196 Z" fill="#ff5c8a" opacity=".38" stroke="#fff" stroke-width="4" stroke-dasharray="8 6"/>` +
+      fig({ x: 62, s: 0.72, face: 'happy', R: [-115, -70], L: [80, 88] }) + fig({ x: 138, s: 0.72, face: 'happy', hair: '#6b3b1f', L: [-65, -110], R: [100, 92] })),
+    fusion: () => wrap(BG.duo, fig({ x: 46, s: 0.72, face: 'shout', L: [0, 0], R: [110, 70] }) + fig({ x: 154, s: 0.72, face: 'shout', hair: '#6b3b1f', R: [180, 180], L: [70, 110] }) +
+      `<path d="M100 104 l5 10 l11 3 l-11 3 l-5 10 l-5 -10 l-11 -3 l11 -3 Z" fill="#ffe28a" stroke="${INK}" stroke-width="2"/>` + txt(100, 44, 'ฟิว…ชั่น!', 18, '#ffe28a')),
+    gorilla2: () => wrap(BG.duo, fig({ x: 58, s: 0.72, face: 'gorilla', L: [100, -140], R: [80, -40], hair: '#222' }) + fig({ x: 142, s: 0.72, face: 'gorilla', L: [100, -140], R: [80, -40], hair: '#222' }) + txt(100, 40, 'ตุ้บ ตุ้บ!', 18, '#ffe28a')),
+    neutral: () => wrap('#4666b8', fig({ face: 'happy' }))
+  };
+  return { svg: id => (ART[id] || ART.neutral)(), ids: Object.keys(ART) };
+})();
+
+/* ==================== 5) API + นาฬิกาเซิร์ฟเวอร์ ==================== */
+const Clock = {
+  offset: 0, bestRtt: Infinity,
+  now() { return Date.now() + this.offset; },
+  sample(serverNow, t0, t1) {
+    if (!serverNow) return;
+    const rtt = t1 - t0;
+    this.bestRtt *= 1.05;                                         // ค่อย ๆ ลืมค่าเก่า
+    if (rtt <= this.bestRtt) { this.bestRtt = rtt; this.offset = serverNow - (t0 + t1) / 2; }
+  }
+};
+const statusOf = (cfg, today) => today < cfg.seasonStart ? 'upcoming' : (today > cfg.seasonEnd ? 'ended' : 'live');
+
+/** คำนวณตารางอันดับจากข้อมูลรายวัน (ใช้ในโหมดเก็บในเครื่อง/จำลอง — ตรรกะเดียวกับฝั่ง GAS) */
+function boardFrom(days, cfg, scope, today) {
+  let from = cfg.seasonStart, to = cfg.seasonEnd;
+  if (scope === 'today') { from = to = today; }
+  if (scope === 'week') { const ws = weekStart(today); from = ws > from ? ws : from; const we = addDays(ws, 6); to = we < to ? we : to; }
+  const map = {};
+  Object.keys(days).forEach(d => {
+    if (d < from || d > to || d < cfg.seasonStart || d > cfg.seasonEnd) return;
+    const mult = d === cfg.seasonEnd ? cfg.finalDayMultiplier : 1;
+    Object.keys(days[d]).forEach(key => {
+      const rec = days[d][key];
+      const p = map[key] || (map[key] = { key, name: rec.name, dept: rec.dept, total: 0, days: 0, best: 0, games: 0 });
+      p.total += Math.round(rec.best * mult); p.days++; p.games += rec.games; p.best = Math.max(p.best, rec.best);
+      p.name = rec.name; p.dept = rec.dept || p.dept;
+    });
+  });
+  const rows = Object.values(map).sort((a, b) => (b.total - a.total) || (b.best - a.best));
+  return { from, to, rows, hidden: false, cutoff: null };
+}
+const pkey = n => String(n || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+/** โหมดทดลอง: เก็บคะแนนใน localStorage ของเครื่องนี้ */
+function makeLocalApi(storeKey, seasonName) {
+  const load = () => store.get(storeKey, { start: null, days: {} });
+  const cfgOf = d => ({
+    seasonName, seasonStart: d.start, seasonEnd: addDays(d.start, 13), finalDayMultiplier: 2, hideLastDays: 0,
+    orgName: 'ออฟฟิศฮาไม่หยุด', difficulty: 'normal', roundsPerGame: 5,
+    prizeNote: 'เชื่อม Google Sheets (ดู README) เพื่อแข่งทั้งออฟฟิศ'
+  });
+  return {
+    async call(action, p = {}) {
+      const today = bkkKey();
+      const d = load();
+      if (!d.start) { d.start = today; store.set(storeKey, d); }
+      const cfg = cfgOf(d);
+      const base = { serverNow: Date.now() };
+      if (action === 'config') return Object.assign(base, { ok: true, today, status: statusOf(cfg, today), config: cfg });
+      if (action === 'submit') {
+        const counted = ['daily', 'room', 'duo'].includes(p.mode) && statusOf(cfg, today) === 'live';
+        const people = p.mode === 'duo' ? (p.players || []) : [{ name: p.name, dept: p.dept }];
+        if (counted) {
+          d.days[today] = d.days[today] || {};
+          people.forEach(x => {
+            const k = pkey(x.name); if (!k) return;
+            const rec = d.days[today][k] || (d.days[today][k] = { name: x.name, dept: x.dept, best: 0, games: 0 });
+            rec.best = Math.max(rec.best, p.score); rec.games++; rec.name = x.name; rec.dept = x.dept || rec.dept;
+          });
+          store.set(storeKey, d);
+        }
+        const b = boardFrom(d.days, cfg, 'season', today), me = pkey(people[0] && people[0].name);
+        const i = b.rows.findIndex(x => x.key === me), tb = boardFrom(d.days, cfg, 'today', today), j = tb.rows.findIndex(x => x.key === me);
+        return Object.assign(base, { ok: true, counted, seasonTotal: i >= 0 ? b.rows[i].total : 0, seasonRank: i >= 0 ? i + 1 : null, todayBest: j >= 0 ? tb.rows[j].best : 0, todayRank: j >= 0 ? j + 1 : null });
+      }
+      if (action === 'leaderboard') {
+        const b = boardFrom(d.days, cfg, p.scope || 'season', today);
+        const out = Object.assign(base, { ok: true, scope: p.scope, today, status: statusOf(cfg, today), config: cfg }, b);
+        if (p.name) { const i = b.rows.findIndex(x => x.key === pkey(p.name)); out.me = i >= 0 ? { total: b.rows[i].total, best: b.rows[i].best, rank: i + 1 } : { total: 0, best: 0, rank: null }; }
+        return out;
+      }
+      return Object.assign(base, { ok: false, error: 'ห้องแข่งต้องเชื่อม Google Sheets ก่อน (ดูวิธีใน README)' });
+    }
+  };
+}
+
+/** โหมดจำลอง (?api=mock): ห้องแข่งมีบอท 2 ตัว — ใช้ทดสอบ/สาธิต */
+function makeMockApi() {
+  const local = makeLocalApi('fpb_mock', 'ซีซั่นจำลอง');
+  let room = null;
+  const BOTS = [['bot1', 'บอทสมศรี', 'บัญชี', 0.8], ['bot2', 'บอทลุงพล', 'ธุรการ', 0.55]];
+  const pub = () => ({
+    code: room.code, status: room.status, hostId: room.hostId, seed: room.seed, poseIds: room.poseIds, roundMs: room.roundMs,
+    startAt: room.startAt, game: room.game,
+    players: Object.entries(room.players).map(([pid, p]) => ({ pid, name: p.name, dept: p.dept, ready: p.ready, host: pid === room.hostId, playing: true, score: p.score, prog: p.prog, clears: p.clears, rs: p.rs, done: p.done, online: true }))
+  });
+  function simBots(now) {
+    if (room.status !== 'playing') return;
+    const endAt = room.startAt + room.poseIds.length * room.roundMs + 8000;
+    if (now > endAt) { room.status = 'done'; return; }
+    BOTS.forEach(([pid, , , skill], bi) => {
+      const p = room.players[pid]; if (!p) return;
+      room.poseIds.forEach((_, r) => {
+        const rnd = PL.rng(room.seed + r * 31 + bi * 7);
+        const act = room.startAt + r * room.roundMs + T.intro + T.countdown;
+        const ok = rnd() < skill, at = (1800 + rnd() * 7000) / SPEED;
+        if (now < act) return;
+        if (ok && now >= act + at && !(r in p.clears)) { p.clears[r] = Math.round(at); p.rs[r] = Math.round(100 + (1 - at / T.action) * 100); }
+        if (!ok && now >= act + T.action && !(r in p.rs)) p.rs[r] = 12;
+        if (now < act + T.action) p.prog = { r, p: Math.min(1, (now - act) / (ok ? at : T.action * 1.4)), n: 0, g: room.game };
+      });
+      p.score = Object.values(p.rs).reduce((a, b) => a + b, 0);
+    });
+  }
+  const newP = (name, dept) => ({ name, dept, ready: false, score: 0, prog: null, clears: {}, rs: {}, done: false });
+  return {
+    async call(action, p = {}) {
+      await sleep(80 + Math.random() * 120);
+      const now = Date.now(), base = { serverNow: now };
+      if (['config', 'submit', 'leaderboard'].includes(action)) return local.call(action, p);
+      if (action === 'roomCreate') {
+        room = { code: 'TEST', hostId: p.pid, status: 'lobby', seed: Math.floor(Math.random() * 1e9), poseIds: p.poseIds, roundMs: p.roundMs, startAt: 0, game: 1, players: {} };
+        room.players[p.pid] = newP(p.name, p.dept);
+        BOTS.forEach(([pid, name, dept]) => { room.players[pid] = Object.assign(newP(name, dept), { ready: true }); });
+        return Object.assign(base, { ok: true, room: pub() });
+      }
+      if (!room || String(p.code).toUpperCase() !== room.code) return Object.assign(base, { ok: false, error: 'ไม่พบห้องนี้ (โหมดจำลองใช้รหัส TEST)' });
+      if (action === 'roomJoin') { if (!room.players[p.pid]) room.players[p.pid] = newP(p.name, p.dept); return Object.assign(base, { ok: true, room: pub() }); }
+      const me = room.players[p.pid];
+      if (action === 'roomSync') {
+        simBots(now);
+        if (!me) return Object.assign(base, { ok: false, error: 'not_in_room' });
+        if (p.leave) { delete room.players[p.pid]; return Object.assign(base, { ok: true, left: true }); }
+        if ('ready' in p && room.status === 'lobby') me.ready = !!p.ready;
+        if (p.prog) me.prog = Object.assign({}, p.prog, { g: room.game });
+        if (p.clear && !(p.clear.r in me.clears)) { me.clears[p.clear.r] = p.clear.ms; me.rs[p.clear.r] = p.clear.pts; }
+        if (p.fail && !(p.fail.r in me.rs)) me.rs[p.fail.r] = p.fail.pts;
+        if (p.done) me.done = true;
+        me.score = Object.values(me.rs).reduce((a, b) => a + b, 0);
+        return Object.assign(base, { ok: true, room: pub() });
+      }
+      if (action === 'roomStart') { if (room.hostId !== p.pid) return Object.assign(base, { ok: false, error: 'เฉพาะเจ้าของห้อง' }); room.status = 'playing'; room.startAt = now + 5000; return Object.assign(base, { ok: true, room: pub() }); }
+      if (action === 'roomReset') {
+        room.status = 'lobby'; room.game++; room.startAt = 0; room.seed = Math.floor(Math.random() * 1e9); if (p.poseIds) room.poseIds = p.poseIds;
+        Object.entries(room.players).forEach(([pid, x]) => Object.assign(x, { ready: pid.startsWith('bot'), score: 0, prog: null, clears: {}, rs: {}, done: false }));
+        return Object.assign(base, { ok: true, room: pub() });
+      }
+      return Object.assign(base, { ok: false, error: 'unknown_action' });
+    }
+  };
+}
+
+const GasApi = {
+  async call(action, p = {}) {
+    const ctl = new AbortController();
+    const tm = setTimeout(() => ctl.abort(), 20000);
+    const t0 = Date.now();
+    try {
+      // text/plain = ไม่มี preflight CORS กับ Apps Script
+      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, clientVersion: APP_VERSION }, p)), signal: ctl.signal, redirect: 'follow' });
+      const j = await res.json();
+      Clock.sample(j.serverNow, t0, Date.now());
+      return j;
+    } finally { clearTimeout(tm); }
+  }
+};
+const Api = API_KIND === 'gas' ? GasApi : (API_KIND === 'mock' ? makeMockApi() : makeLocalApi('fpb_local', 'ซีซั่นทดลอง (เก็บในเครื่องนี้)'));
+async function api(action, p) {
+  try { return await Api.call(action, p); }
+  catch (e) { console.warn('api', action, e); return { ok: false, error: e.name === 'AbortError' ? 'เซิร์ฟเวอร์ตอบช้าเกินไป' : 'เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ต' }; }
+}
+
+/* ==================== สถานะรวม ==================== */
+const S = {
+  profile: store.get('fpb_profile', { name: '', dept: '' }),
+  cfg: null, today: bkkKey(), status: 'live', k: 1,
+  src: null, vw: 640, vh: 480, camOn: false,
+  models: { face: null, pose: null, ready: false, loading: null, numPoses: 1 },
+  vision: null,
+  cal: { face: null },
+  det: { face: null, faceLm: null, faceAt: 0, bodies: [], poseLm: [], poseAt: 0 },
+  need: { face: false, pose: false },
+  stageOn: false, phase: 'idle', match: null, setup: null, room: null,
+  lastFrame: 0, toggle: false, last: { mode: null },
+  me: { total: 0, rank: null }
+};
+
+/* ==================== 6) กล้อง + โมเดล AI ==================== */
+const video = $('#cam');
+let mockCanvas = null, mockCtx = null;
+async function startCamera() {
+  if (S.camOn) return;
+  if (MOCK) {
+    mockCanvas = document.createElement('canvas'); mockCanvas.width = 960; mockCanvas.height = 720; mockCanvas.className = 'mockcam';
+    mockCtx = mockCanvas.getContext('2d');
+    video.replaceWith(mockCanvas);
+    S.src = mockCanvas; S.vw = 960; S.vh = 720; S.camOn = true;
+    return;
+  }
+  if (!window.isSecureContext) throw new Error('ต้องเปิดผ่าน https:// เท่านั้นจึงจะใช้กล้องได้');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('เบราว์เซอร์นี้ไม่รองรับกล้อง ลองเปิดใน Chrome หรือ Safari');
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } } });
+  } catch (e) {
+    if (e.name === 'NotAllowedError') throw new Error('ไม่ได้รับอนุญาตให้ใช้กล้อง — กดไอคอนกล้อง/แม่กุญแจที่แถบที่อยู่ แล้วเลือก "อนุญาต"');
+    if (e.name === 'NotFoundError') throw new Error('ไม่พบกล้องในเครื่องนี้');
+    if (e.name === 'NotReadableError') throw new Error('กล้องถูกโปรแกรมอื่นใช้อยู่ ปิดโปรแกรมนั้นก่อน');
+    throw e;
+  }
+  video.srcObject = stream;
+  try { await video.play(); } catch (e) { /* iOS บางรุ่นเล่นเองเมื่อพร้อม */ }
+  for (let i = 0; i < 50 && !video.videoWidth; i++) await sleep(100);
+  S.src = video; S.vw = video.videoWidth || 640; S.vh = video.videoHeight || 480; S.camOn = true;
+}
+
+async function fetchBuf(url, onp) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('โหลดโมเดลไม่สำเร็จ (' + r.status + ')');
+  const total = +r.headers.get('content-length') || 0;
+  if (!r.body || !total) { const b = new Uint8Array(await r.arrayBuffer()); onp(1); return b; }
+  const reader = r.body.getReader(); const chunks = []; let got = 0;
+  for (;;) { const { done, value } = await reader.read(); if (done) break; chunks.push(value); got += value.length; onp(Math.min(0.99, got / total)); }
+  const out = new Uint8Array(got); let o = 0; for (const c of chunks) { out.set(c, o); o += c.length; }
+  onp(1); return out;
+}
+
+function loadModels(onProgress) {
+  if (S.models.ready) { onProgress(1); return Promise.resolve(); }
+  if (S.models.loading) return S.models.loading;
+  S.models.loading = (async () => {
+    if (MOCK) { for (let i = 1; i <= 4; i++) { onProgress(i / 4); await sleep(120); } S.models.ready = true; return; }
+    const prog = { f: 0, p: 0, w: 0 };
+    const tell = () => onProgress(prog.w * 0.2 + prog.f * 0.35 + prog.p * 0.45);
+    const vision = await import(CDN.vision);
+    S.vision = vision;
+    const fsP = vision.FilesetResolver.forVisionTasks(CDN.wasm).then(x => { prog.w = 1; tell(); return x; });
+    const [fileset, fb, pb] = await Promise.all([fsP, fetchBuf(MODELS.face, v => { prog.f = v; tell(); }), fetchBuf(MODELS.pose, v => { prog.p = v; tell(); })]);
+    const make = async (Cls, opts, buf) => {
+      for (const delegate of ['GPU', 'CPU']) {
+        try { return await Cls.createFromOptions(fileset, Object.assign({}, opts, { baseOptions: { modelAssetBuffer: new Uint8Array(buf), delegate } })); }
+        catch (e) { console.warn(delegate + ' ใช้ไม่ได้', e); if (delegate === 'CPU') throw e; }
+      }
+    };
+    S.models.face = await make(vision.FaceLandmarker, { runningMode: 'VIDEO', numFaces: 1, outputFaceBlendshapes: true }, fb);
+    S.models.pose = await make(vision.PoseLandmarker, { runningMode: 'VIDEO', numPoses: 1 }, pb);
+    S.models.ready = true;
+  })();
+  S.models.loading.catch(() => { S.models.loading = null; });
+  return S.models.loading;
+}
+async function setNumPoses(n) {
+  if (S.models.numPoses === n) return;
+  S.models.numPoses = n;
+  if (MOCK || !S.models.pose) return;
+  try { await S.models.pose.setOptions({ numPoses: n }); } catch (e) { console.warn(e); }
+}
+
+let lastVT = -1, lastTs = 0;
+function detectFrame(now) {
+  const need = S.need;
+  if (!need.face && !need.pose) return;
+  if (MOCK) { mockDetect(now); return; }
+  if (!S.models.ready || video.readyState < 2) return;
+  if (video.currentTime === lastVT) return;
+  lastVT = video.currentTime;
+  let ts = Math.round(now); if (ts <= lastTs) ts = lastTs + 1; lastTs = ts;
+  const aspect = video.videoWidth / video.videoHeight;
+  S.vw = video.videoWidth; S.vh = video.videoHeight;
+  const doFace = need.face && (!need.pose || S.toggle);
+  const doPose = need.pose && (!need.face || !S.toggle);
+  S.toggle = !S.toggle;
+  if (doFace) {
+    const r = S.models.face.detectForVideo(video, ts);
+    if (r.faceLandmarks && r.faceLandmarks.length) {
+      const bs = {};
+      ((r.faceBlendshapes && r.faceBlendshapes[0] && r.faceBlendshapes[0].categories) || []).forEach(c => { bs[c.categoryName] = c.score; });
+      S.det.face = PL.faceFeatures(bs, r.faceLandmarks[0], aspect);
+      S.det.faceLm = r.faceLandmarks[0];
+    } else { S.det.face = null; S.det.faceLm = null; }
+    S.det.faceAt = now;
+  }
+  if (doPose) {
+    const r = S.models.pose.detectForVideo(video, ts);
+    const lms = r.landmarks || [];
+    S.det.bodies = lms.map((lm, i) => PL.bodyFrame(lm, aspect, r.worldLandmarks && r.worldLandmarks[i])).sort((a, b) => a.nose.x - b.nose.x);
+    S.det.poseLm = lms;
+    S.det.poseAt = now;
+  }
+}
+function freshInput(now) {
+  return {
+    face: now - S.det.faceAt < 500 ? S.det.face : null,
+    bodies: now - S.det.poseAt < 500 ? S.det.bodies : [],
+    t: now
+  };
+}
+
+/* ----- โหมดจำลอง (ไม่มีกล้อง) ----- */
+const mockImgs = {};
+function mockArt(id) {
+  if (!mockImgs[id]) { const im = new Image(); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(Art.svg(id)); mockImgs[id] = im; }
+  return mockImgs[id];
+}
+const keys = { space: false, rep: 0 };
+function mockDetect(now) {
+  // สร้างใบหน้าและลำตัวสมมติให้กล่องสแกน/วาดทับทำงาน
+  S.det.face = { box: { x0: 0.4, y0: 0.2, x1: 0.6, y1: 0.5 }, center: { x: 0.5, y: 0.35 }, jawOpen: 0, eyeWide: 0, cheekPuff: 0, smile: 0, browOuter: 0, browInner: 0, pucker: 0, eyeAp: 0.28, cheekRatio: 1.4, blinkL: 0, blinkR: 0, frown: 0, pout: 0, upperUp: 0, lookIn: 0, lipGap: 0 };
+  S.det.faceAt = now;
+  const mk = cx => { const lm = Array.from({ length: 33 }, () => ({ x: cx, y: 0.5, z: 0, visibility: 0.95 })); lm[0] = { x: cx, y: 0.3, z: 0, visibility: .99 }; lm[11] = { x: cx + 0.1, y: 0.45, z: 0, visibility: .99 }; lm[12] = { x: cx - 0.1, y: 0.45, z: 0, visibility: .99 }; return lm; };
+  const n = S.models.numPoses || 1;
+  const lms = n === 2 ? [mk(0.3), mk(0.7)] : [mk(0.5)];
+  S.det.bodies = lms.map(lm => PL.bodyFrame(lm, S.vw / S.vh, null));
+  S.det.poseLm = lms; S.det.poseAt = now;
+}
+function mockUpdate(r, dt, now) {
+  const st = r.tracker.state; const pose = r.pose;
+  const tAct = now - r.actionLocal;
+  const rnd = r.mockRnd;
+  let ok;
+  if (MOCK === 'keys') ok = keys.space;
+  else if (MOCK === 'fail') ok = false;
+  else ok = rnd.will && tAct > rnd.delay;
+  st.valid = true; st.hint = ok ? 'ค้างไว้!' : 'จำลอง: กด Space ค้าง / R เพื่อนับครั้ง';
+  st.anchor = { x: 0.5, y: 0.2 };
+  if (pose.type === 'hold') {
+    st.ok = ok; st.metric = ok ? 1.1 : 0.4;
+    st.progress = ok ? Math.min(1, st.progress + dt * SPEED / pose.holdMs) : Math.max(0, st.progress - dt * SPEED / 700);
+    if (ok && pose.bonusPts && rnd.bonus) st.bonus = 'mock';
+    st.meters = [['จำลอง', st.metric]];
+  } else {
+    st.justRep = false;
+    if ((ok && now - (r.mockLastRep || 0) > 330 / SPEED) || keys.rep > 0) { st.reps = Math.min(pose.target, st.reps + 1); st.justRep = true; r.mockLastRep = now; keys.rep = Math.max(0, keys.rep - 1); }
+    st.ok = ok; st.metric = ok ? 1 : 0; st.progress = st.reps / pose.target;
+  }
+  if (st.progress >= 1) st.done = true;
+  return st;
+}
+function drawMockCam(now) {
+  if (!mockCtx) return;
+  const c = mockCtx, W = mockCanvas.width, H = mockCanvas.height;
+  const g = c.createLinearGradient(0, 0, W, H);
+  const hue = (now / 60) % 360;
+  g.addColorStop(0, `hsl(${hue},45%,28%)`); g.addColorStop(1, `hsl(${(hue + 60) % 360},45%,16%)`);
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const r = S.match && S.match.round;
+  const id = r && r.tracker.state.ok ? r.pose.id : 'neutral';
+  const im = mockArt(id);
+  if (im.complete && im.naturalWidth !== 0) {
+    c.save(); c.translate(W, 0); c.scale(-1, 1);            // วิดีโอถูกกลับด้านด้วย CSS จึงวาดกลับไว้ก่อน
+    const h = H * 0.8, w = h * 200 / 220; c.drawImage(im, (W - w) / 2, H * 0.1 + Math.sin(now / 300) * 6, w, h); c.restore();
+  }
+}
+
+/* ==================== 7) วาดทับภาพกล้อง ==================== */
+const stage = $('#stage'), ov = $('#ov'), octx = ov.getContext('2d');
+let OW = 0, OH = 0, DPR = 1;
+function resizeOv() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  OW = stage.clientWidth; OH = stage.clientHeight;
+  ov.width = Math.round(OW * DPR); ov.height = Math.round(OH * DPR);
+}
+window.addEventListener('resize', resizeOv);
+/** พิกัดภาพดิบ (0..1, ไม่กลับด้าน) → พิกเซลบนจอ (กลับด้านแบบกระจก + object-fit: cover) */
+function mapPt(x, y) {
+  const sc = Math.max(OW / S.vw, OH / S.vh);
+  const offX = (OW - S.vw * sc) / 2, offY = (OH - S.vh * sc) / 2;
+  return { X: offX + (1 - x) * S.vw * sc, Y: offY + y * S.vh * sc };
+}
+const BONES = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [15, 19], [16, 20]];
+function drawSkeleton(lm, color) {
+  const c = octx;
+  c.lineWidth = 4; c.strokeStyle = color; c.lineCap = 'round';
+  for (const [a, b] of BONES) {
+    const p = lm[a], q = lm[b];
+    if (!p || !q || (p.visibility || 1) < 0.4 || (q.visibility || 1) < 0.4) continue;
+    const A = mapPt(p.x, p.y), B = mapPt(q.x, q.y);
+    c.beginPath(); c.moveTo(A.X, A.Y); c.lineTo(B.X, B.Y); c.stroke();
+  }
+  c.fillStyle = color;
+  [0, 11, 12, 13, 14, 15, 16].forEach(i => { const p = lm[i]; if (!p || (p.visibility || 1) < 0.4) return; const A = mapPt(p.x, p.y); c.beginPath(); c.arc(A.X, A.Y, i === 0 ? 7 : 5, 0, Math.PI * 2); c.fill(); });
+}
+function drawFace(lm, color) {
+  const FL = S.vision && S.vision.FaceLandmarker;
+  if (!FL || !lm) return;
+  const c = octx; c.strokeStyle = color; c.lineWidth = 2;
+  [FL.FACE_LANDMARKS_FACE_OVAL, FL.FACE_LANDMARKS_LIPS, FL.FACE_LANDMARKS_LEFT_EYE, FL.FACE_LANDMARKS_RIGHT_EYE, FL.FACE_LANDMARKS_LEFT_EYEBROW, FL.FACE_LANDMARKS_RIGHT_EYEBROW].forEach(set => {
+    if (!set) return;
+    c.beginPath();
+    for (const e of set) { const a = lm[e.start], b = lm[e.end]; if (!a || !b) continue; const A = mapPt(a.x, a.y), B = mapPt(b.x, b.y); c.moveTo(A.X, A.Y); c.lineTo(B.X, B.Y); }
+    c.stroke();
+  });
+}
+/** เส้นโครงร่างนำทาง (Skeleton Guide) — บอกตำแหน่งที่ควรยืน */
+function drawGuide(kind, alpha) {
+  const c = octx, W = OW, H = OH, m = Math.min(W, H);
+  c.save(); c.globalAlpha = alpha; c.setLineDash([12, 10]); c.lineWidth = 4; c.strokeStyle = '#ffe28a'; c.fillStyle = 'rgba(255,226,138,.07)';
+  const body = (cx, s) => {
+    const hr = m * 0.085 * s, hy = H * 0.26;
+    c.beginPath(); c.ellipse(cx, hy, hr, hr * 1.2, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+    const sy = hy + hr * 1.7, sw = hr * 2.6;
+    c.beginPath(); c.moveTo(cx - sw, H * 0.92); c.lineTo(cx - sw, sy + hr * 0.5); c.quadraticCurveTo(cx - sw, sy, cx - hr * 0.6, sy); c.lineTo(cx + hr * 0.6, sy);
+    c.quadraticCurveTo(cx + sw, sy, cx + sw, sy + hr * 0.5); c.lineTo(cx + sw, H * 0.92); c.fill(); c.stroke();
+  };
+  if (kind === 'face') { c.beginPath(); c.ellipse(W / 2, H * 0.42, m * 0.2, m * 0.26, 0, 0, Math.PI * 2); c.fill(); c.stroke(); }
+  else if (kind === 'duo') { body(W * 0.3, 0.8); body(W * 0.7, 0.8); }
+  else body(W / 2, 1);
+  c.restore();
+}
+function drawHeart(cx, cy, size, fill) {
+  const c = octx;
+  c.save(); c.translate(cx, cy); c.scale(size / 100, size / 100);
+  c.beginPath(); c.moveTo(0, 30); c.bezierCurveTo(-60, -10, -40, -70, 0, -35); c.bezierCurveTo(40, -70, 60, -10, 0, 30); c.closePath();
+  c.lineWidth = 8; c.strokeStyle = 'rgba(255,255,255,.9)'; c.fillStyle = `rgba(255,92,138,${0.2 + 0.6 * fill})`;
+  c.shadowColor = '#ff5c8a'; c.shadowBlur = 30; c.fill(); c.stroke(); c.restore();
+}
+function drawOverlay(now) {
+  if (OW !== stage.clientWidth || OH !== stage.clientHeight) resizeOv();
+  const c = octx;
+  c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, OW, OH);
+  const m = S.match, r = m && m.round;
+  const inPlay = r && !r.finished && (r.phase === 'action' || r.phase === 'countdown' || r.phase === 'intro');
+  const ok = r && r.tracker.state.ok;
+  if (S.phase === 'setup') drawGuide(S.setup && S.setup.persons === 2 ? 'duo' : 'body', 0.55);
+  if (r && (r.phase === 'intro' || r.phase === 'countdown')) drawGuide(r.pose.persons === 2 ? 'duo' : (r.pose.needs === 'face' ? 'face' : 'body'), 0.6);
+  const fresh = freshInput(now);
+  const col = ok ? 'rgba(245,197,66,.95)' : 'rgba(255,255,255,.55)';
+  if ((S.phase === 'setup' || (inPlay && S.need.pose)) && fresh.bodies.length) S.det.poseLm.forEach(lm => drawSkeleton(lm, col));
+  if ((S.phase === 'setup' || (inPlay && S.need.face)) && fresh.face) drawFace(S.det.faceLm, ok ? 'rgba(245,197,66,.9)' : 'rgba(255,255,255,.45)');
+  if (r && r.pose.id === 'heart' && r.phase === 'action' && r.tracker.state.anchor && r.tracker.state.metric > 0.5) {
+    const a = mapPt(r.tracker.state.anchor.x, r.tracker.state.anchor.y);
+    drawHeart(a.X, a.Y + Math.min(OW, OH) * 0.12, Math.min(OW, OH) * 0.55, r.tracker.state.progress);
+  }
+}
+
+/* ==================== 8) สแกนเริ่มต้น (ตั้งค่ากล้อง + calibrate) ==================== */
+const game = $('#scr-game');
+function showStage(on) {
+  S.stageOn = on;
+  game.classList.toggle('hidden', !on);
+  document.body.style.overflow = on ? 'hidden' : '';
+  if (on) { resizeOv(); }
+}
+function setChecks(items) {
+  $('#setupChecks').innerHTML = items.map(([id, label, st]) => `<li class="${st}" data-id="${id}"><span class="st">${st === 'ok' ? '✓' : st === 'bad' ? '!' : ''}</span>${esc(label)}</li>`).join('');
+}
+/** เปิดกล้อง → โหลด AI → สแกนหน้า/ไหล่ → รอกด READY */
+function runSetup(opts) {
+  return new Promise((resolve, reject) => {
+    const persons = opts.persons || 1;
+    S.setup = { persons, faceSamples: [], bodySeen: 0, duoSeen: 0, startedAt: 0, resolve, reject, ready: false, lastUi: 0, stage: 'cam', msg: '' };
+    showStage(true);
+    resetHud(); $('#hudTop').classList.add('hidden');
+    $('#setupPanel').classList.remove('hidden'); $('#scanline').classList.remove('hidden');
+    $('#setupTitle').textContent = persons === 2 ? 'สแกน 2 คนหน้ากล้อง' : 'สแกนใบหน้าและโครงร่าง';
+    $('#setupSub').textContent = persons === 2 ? 'ยืนคู่กันกลางจอ ให้เห็นหัวถึงเอวทั้งสองคน' : 'หน้าตรงกลางจอ ถอยให้เห็นไหล่และแขน แล้วทำหน้านิ่ง ๆ สักครู่';
+    const btn = $('#btnSetupReady'); btn.disabled = true;
+    btn.textContent = opts.readyLabel || '💪 พร้อมสู้ชีวิต!';
+    S.phase = 'setup';
+    const items = () => {
+      const s = S.setup; if (!s) return [];
+      const faceOk = s.faceSamples.length >= 18;
+      return [
+        ['cam', 'เปิดกล้อง', s.stage === 'cam' ? 'wait' : (s.stage === 'camfail' ? 'bad' : 'ok')],
+        ['ai', 'โหลด AI ตรวจท่า' + (s.aiPct != null && s.aiPct < 1 ? ` ${Math.round(s.aiPct * 100)}%` : ''), s.stage === 'cam' || s.stage === 'camfail' ? '' : (s.stage === 'ai' ? 'wait' : (s.stage === 'aifail' ? 'bad' : 'ok'))],
+        ['face', 'สแกนใบหน้า' + (!faceOk && s.stage === 'scan' ? ` ${Math.round(s.faceSamples.length / 18 * 100)}%` : ''), s.stage !== 'scan' ? '' : (faceOk ? 'ok' : 'wait')],
+        persons === 2 ? ['duo', 'เห็นครบ 2 คน', s.stage !== 'scan' ? '' : (s.duoSeen > 10 ? 'ok' : 'wait')]
+          : ['body', 'เห็นไหล่และแขน', s.stage !== 'scan' ? '' : (s.bodySeen > 10 ? 'ok' : 'wait')]
+      ];
+    };
+    S.setup.items = items;
+    setChecks(items());
+    (async () => {
+      try {
+        await startCamera();
+      } catch (e) {
+        S.setup.stage = 'camfail'; setChecks(items()); $('#setupMsg').textContent = e.message || String(e); return;
+      }
+      S.setup.stage = 'ai'; setChecks(items());
+      try {
+        await loadModels(p => { if (S.setup) { S.setup.aiPct = p; if (performance.now() - S.setup.lastUi > 150) { S.setup.lastUi = performance.now(); setChecks(items()); } } });
+      } catch (e) {
+        console.error(e);
+        if (S.setup) { S.setup.stage = 'aifail'; setChecks(items()); $('#setupMsg').textContent = 'โหลด AI ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่'; }
+        return;
+      }
+      if (!S.setup) return;
+      await setNumPoses(persons);
+      S.setup.stage = 'scan'; S.setup.startedAt = performance.now();
+      S.need = { face: true, pose: true };
+      setChecks(items());
+    })();
+  });
+}
+function setupTick(now) {
+  const s = S.setup; if (!s || s.stage !== 'scan') return;
+  const inp = freshInput(now);
+  let msg = '';
+  if (MOCK && s.faceSamples.length < 18) { s.faceSamples.push(inp.face); s.bodySeen++; s.duoSeen++; }
+  const f = inp.face;
+  if (!f) msg = 'ยังไม่เห็นหน้า — หันหน้าเข้ากล้อง เปิดไฟให้สว่าง';
+  else {
+    const fw = f.box.x1 - f.box.x0;
+    if (fw < 0.08) msg = 'หน้าเล็กไป ขยับเข้ามาใกล้อีกนิด';
+    else if (f.smile < 0.5 && f.jawOpen < 0.25 && s.faceSamples.length < 45) s.faceSamples.push(f);   // เก็บหน้านิ่ง ๆ
+    else if (s.faceSamples.length < 18) msg = 'ทำหน้านิ่ง ๆ ก่อน ยังไม่ต้องยิ้ม';
+  }
+  const okBodies = inp.bodies.filter(b => b.ok);
+  if (okBodies.length >= 1) s.bodySeen++;
+  if (okBodies.length >= 2) s.duoSeen++;
+  if (!msg && s.persons === 2 && s.duoSeen <= 10) msg = okBodies.length < 2 ? 'ต้องเห็นทั้ง 2 คน — ถอยห่างกล้องอีกหน่อย' : '';
+  if (!msg && s.persons === 1 && s.bodySeen <= 10) msg = 'ถอยหลังให้เห็นไหล่และแขน (ท่าร่างกายต้องใช้)';
+  if (s.faceSamples.length >= 18) S.cal.face = PL.calibrateFace(s.faceSamples);
+  const faceOk = s.faceSamples.length >= 18;
+  const bodyOk = s.persons === 2 ? s.duoSeen > 10 : s.bodySeen > 10;
+  const waited = now - s.startedAt > 7000;
+  const canGo = s.persons === 2 ? bodyOk : faceOk && (bodyOk || waited);
+  if (canGo && !bodyOk && s.persons === 1) msg = 'ยังไม่เห็นไหล่ชัด ๆ — เล่นได้ แต่ท่าร่างกายจะยากขึ้น';
+  if (canGo && !msg) msg = 'เรียบร้อย! กดปุ่มด้านล่างได้เลย';
+  if (now - s.lastUi > 200) {
+    s.lastUi = now;
+    setChecks(s.items());
+    $('#setupMsg').textContent = msg;
+    $('#btnSetupReady').disabled = !canGo;
+  }
+}
+function closeSetup() {
+  $('#setupPanel').classList.add('hidden'); $('#scanline').classList.add('hidden');
+  $('#hudTop').classList.remove('hidden');
+  $('#setupMsg').textContent = '';
+  S.setup = null;
+}
+$('#btnSetupReady').addEventListener('click', () => {
+  Sfx.unlock(); Sfx.ui();
+  const s = S.setup; if (!s) return;
+  const resolve = s.resolve;
+  closeSetup();
+  S.need = { face: false, pose: false }; S.phase = 'idle';
+  S.calibrated = true;
+  resolve();
+});
+
+/* ==================== 9) เอนจินเกม ==================== */
+const hud = {
+  round: $('#hudRound b'), pose: $('#hudPose b'), score: $('#hudScore b'), timer: $('#timer'), timerBar: $('#timer i'),
+  headTag: $('#headTag'), reps: $('#repsTxt'), hold: $('#holdBar'), holdFill: $('#holdBar i'), hint: $('#hint'),
+  center: $('#centerLayer'), mini: $('#miniCard'), meters: $('#meters'), glow: $('#okGlow'), opps: $('#opps'), fx: $('#fx')
+};
+function resetHud() {
+  hud.center.innerHTML = ''; hud.mini.classList.add('hidden'); hud.timer.classList.add('hidden'); hud.headTag.classList.add('hidden');
+  hud.hint.classList.add('hidden'); hud.meters.classList.add('hidden'); hud.glow.classList.remove('on'); hud.opps.classList.add('hidden');
+}
+const clk = () => (S.match && S.match.room ? Clock.now() : Date.now());
+
+/**
+ * เริ่มแมตช์
+ * mode: 'daily' | 'room' | 'duo' | 'practice'
+ * room: { code, startAt(เวลาเซิร์ฟเวอร์), roundMs } — เฉพาะห้องแข่ง
+ */
+function startMatch(o) {
+  resetHud();
+  S.match = {
+    mode: o.mode, poseIds: o.poseIds, room: o.room || null, players: o.players || null,
+    score: 0, streak: 0, results: [], round: null, seenClears: {}, ended: false, startedAt: Date.now()
+  };
+  S.last = { mode: o.mode, poseIds: o.poseIds, players: o.players };
+  S.phase = 'match';
+  showStage(true);
+  $('#hudTop').classList.remove('hidden');
+  hud.opps.classList.toggle('hidden', !o.room);
+  const t0 = o.room ? o.room.startAt : Date.now();
+  beginRound(0, t0);
+}
+function beginRound(i, t0) {
+  const m = S.match;
+  const pose = PL.BY_ID[m.poseIds[i]];
+  const rnd = PL.rng((m.room ? m.room.seed || 1 : Date.now()) + i * 97);
+  m.round = {
+    i, pose, t0, phase: '', finished: false, success: false,
+    tracker: PL.createTracker(pose, { k: S.k, cal: S.cal }),
+    peak: { m: 0, canvas: null, focus: null, at: 0 }, frames: [], lastGrab: 0, voice: null, lastCount: -1, lastTick: -1,
+    mockRnd: { will: rnd() < 0.85, delay: (600 + rnd() * 2500) / SPEED, bonus: rnd() < 0.5 }
+  };
+  S.need = { face: false, pose: false };
+  setNumPoses(pose.persons || 1);
+  hud.round.textContent = `${i + 1}/${m.poseIds.length}`;
+  hud.pose.textContent = pose.name;
+  hud.score.textContent = fmt(m.score);
+}
+function nextRoundOrEnd() {
+  const m = S.match, r = m.round;
+  if (r.i + 1 >= m.poseIds.length) { endMatch(); return; }
+  const t0 = m.room ? m.room.startAt + (r.i + 1) * m.room.roundMs : Date.now();
+  beginRound(r.i + 1, t0);
+}
+function setPhase(r, ph) {
+  if (r.phase === ph) return;
+  r.phase = ph;
+  const pose = r.pose, m = S.match;
+  if (ph === 'intro') {
+    hud.center.innerHTML = `<div class="introcard"><span class="tag">ด่าน ${r.i + 1}/${m.poseIds.length} • ${pose.cat === 'face' ? 'หมวดใบหน้า' : pose.cat === 'duo' ? 'ท่าคู่คอมโบ' : 'หมวดแขนและร่างกาย'}</span><div class="art">${Art.svg(pose.id)}</div><h3>${esc(pose.name)}</h3><p>${esc(pose.how)}</p><div class="tip">💡 ${esc(pose.tip)}</div></div>`;
+    hud.mini.classList.add('hidden'); hud.timer.classList.add('hidden'); hud.headTag.classList.add('hidden');
+    showHint(pose.persons === 2 ? 'ยืนคู่กันให้เห็นหัวถึงเอว' : (pose.needs === 'face' ? 'วางหน้าในกรอบ' : 'ถอยให้เห็นหัวถึงเอว'), false);
+    Sfx.whooshIn();
+  } else if (ph === 'countdown') {
+    hud.center.innerHTML = '';
+    hud.mini.innerHTML = `<div class="art">${Art.svg(pose.id)}</div>${esc(pose.name)}`; hud.mini.classList.remove('hidden');
+    S.need = { face: pose.needs === 'face', pose: pose.needs === 'pose' };
+    Sfx.countdown(T.countdown);
+  } else if (ph === 'action') {
+    r.actionLocal = performance.now();
+    hud.center.innerHTML = '';
+    hud.timer.classList.remove('hidden', 'low');
+    hud.headTag.classList.remove('hidden');
+    hud.reps.classList.toggle('hidden', pose.type !== 'reps');
+    hud.hold.classList.toggle('hidden', pose.type !== 'hold');
+    if (pose.type === 'reps') hud.reps.innerHTML = `0<small>/${pose.target}</small>`;
+    hud.meters.classList.toggle('hidden', m.mode !== 'practice');
+    if (pose.type === 'hold') r.voice = Sfx.holdVoice(pose.voice);
+  } else if (ph === 'outro') {
+    hud.timer.classList.add('hidden'); hud.headTag.classList.add('hidden'); hud.meters.classList.add('hidden'); hud.glow.classList.remove('on');
+    hud.hint.classList.add('hidden');
+    S.need = { face: false, pose: false };
+  }
+}
+function showHint(txt, ok) {
+  hud.hint.textContent = txt; hud.hint.classList.toggle('hidden', !txt); hud.hint.classList.toggle('ok', !!ok);
+}
+function matchTick(now, dt) {
+  const m = S.match; if (!m || m.ended) return;
+  const r = m.round; const t = clk() - r.t0;
+  const actStart = T.intro + T.countdown;
+  if (m.room) {                                         // ห้องแข่ง: เดินตามเวลาเซิร์ฟเวอร์ ถ้าหลุดไปนานให้ตามทัน
+    const idxNow = Math.floor((clk() - m.room.startAt) / m.room.roundMs);
+    if (idxNow > r.i) {
+      if (!r.finished && r.phase === 'action') finishRound(false, now);
+      if (idxNow >= m.poseIds.length) { endMatch(); return; }
+      beginRound(idxNow, m.room.startAt + idxNow * m.room.roundMs); return;
+    }
+  }
+  if (t < 0) { hud.center.innerHTML = `<div class="count go" style="animation:none;font-size:min(12vw,64px)">เตรียมตัว… ${Math.ceil(-t / 1000)}</div>`; return; }
+  if (t < T.intro) { setPhase(r, 'intro'); return; }
+  if (t < actStart) {
+    setPhase(r, 'countdown');
+    const n = Math.ceil((actStart - t) / 1000);
+    if (n !== r.lastCount) { r.lastCount = n; hud.center.innerHTML = `<div class="count">${n}</div>`; }
+    return;
+  }
+  if (!r.finished && t < actStart + T.action) {
+    if (r.phase !== 'action') { setPhase(r, 'action'); hud.center.innerHTML = '<div class="count go">START!</div>'; setTimeout(() => { if (r.phase === 'action' && hud.center.querySelector('.go')) hud.center.innerHTML = ''; }, 700); }
+    actionTick(r, now, dt, t - actStart);
+    return;
+  }
+  if (!r.finished) { finishRound(false, now); return; }
+  setPhase(r, 'outro');
+  if (m.mode === 'practice') return;                     // ซ้อม: รอผู้เล่นกดปุ่ม
+  if (m.room) { if (t >= m.room.roundMs) nextRoundOrEnd(); else if (!r.waitShown && clk() - r.finishedAt > 1600) { r.waitShown = true; hud.center.innerHTML = `<div class="banner-res" style="background:rgba(7,18,46,.85)"><div class="sub">รอเพื่อน ๆ อีก ${Math.max(0, Math.ceil((m.room.roundMs - t) / 1000))} วิ…</div></div>`; } return; }
+  if (clk() - r.finishedAt > T.outro) nextRoundOrEnd();
+}
+function actionTick(r, now, dt, tAct) {
+  const m = S.match, pose = r.pose;
+  const st = MOCK ? mockUpdate(r, dt, now) : r.tracker.update(freshInput(now), dt);
+  // แถบเวลา
+  const remain = Math.max(0, T.action - tAct);
+  hud.timerBar.style.transform = `scaleX(${remain / T.action})`;
+  const sec = Math.ceil(remain / 1000);
+  if (sec <= 3 && sec !== r.lastTick) { r.lastTick = sec; hud.timer.classList.add('low'); if (sec > 0) Sfx.tick(); }
+  // แท็กเหนือหัว
+  if (st.anchor) {
+    const a = mapPt(st.anchor.x, st.anchor.y);
+    hud.headTag.style.left = clamp(a.X, 90, OW - 90) + 'px';
+    hud.headTag.style.top = clamp(a.Y, 150, OH - 120) + 'px';
+    hud.headTag.style.opacity = 1;
+  } else hud.headTag.style.opacity = 0.4;
+  if (pose.type === 'hold') {
+    hud.holdFill.style.width = (st.progress * 100).toFixed(1) + '%';
+    hud.hold.classList.toggle('off', !st.ok);
+    if (r.voice) r.voice.update(st.progress, st.ok);
+  } else {
+    hud.reps.innerHTML = `${st.reps}<small>/${pose.target}</small>`;
+    if (st.justRep) { hud.reps.classList.remove('pop'); void hud.reps.offsetWidth; hud.reps.classList.add('pop'); Sfx.rep(pose.repSound); }
+  }
+  hud.glow.classList.toggle('on', !!st.ok);
+  showHint(st.hint || (st.ok ? 'ค้างไว้!' : ''), st.ok);
+  if (m.mode === 'practice' && st.meters) {
+    hud.meters.innerHTML = st.meters.map(([lb, v]) => `<div class="meter"><span>${esc(lb)}</span><span class="bar"><i class="${v >= 1 ? 'ok' : ''}" style="width:${Math.min(100, v / 1.5 * 100).toFixed(0)}%"></i></span><span>${Math.round(v * 100)}%</span></div>`).join('');
+  }
+  // เก็บภาพ: ท่าค้าง = เฟรมพีค, ท่านับครั้ง = บัฟเฟอร์ GIF 10 fps
+  if (pose.type === 'hold') {
+    if (st.metric > r.peak.m + 0.05 && st.metric > 0.5 && now - r.peak.at > 250) r.peak = { m: st.metric, canvas: grab(720), focus: focusNow(now), at: now };
+  } else if (now - r.lastGrab >= 100) {
+    r.lastGrab = now;
+    const fr = gifFrame(pose);
+    if (fr) { r.frames.push(fr); if (r.frames.length > 22) r.frames.shift(); }
+  }
+  // ส่งความคืบหน้าให้ห้อง
+  if (m.room) Room.queueProg({ r: r.i, p: +st.progress.toFixed(2), n: st.reps || 0 });
+  if (st.done) finishRound(true, now);
+}
+function finishRound(success, now) {
+  const m = S.match, r = m.round, pose = r.pose;
+  if (r.finished) return;
+  r.finished = true; r.finishedAt = clk(); r.success = success;
+  if (r.voice) { r.voice.stop(); r.voice = null; }
+  const st = r.tracker.state;
+  const elapsed = clamp(performance.now() - (r.actionLocal || performance.now()), 0, T.action);
+  let pts = 0, bonus = 0, mult = 1;
+  if (success) {
+    m.streak++;
+    mult = 1 + 0.1 * Math.min(m.streak - 1, 5);
+    bonus = st.bonus && pose.bonusPts ? pose.bonusPts : 0;
+    pts = Math.round((100 + Math.round((1 - elapsed / T.action) * 100) + bonus) * mult);
+  } else {
+    m.streak = 0;
+    pts = Math.round(st.progress * 40);
+  }
+  if (m.mode !== 'practice') m.score += pts;
+  hud.score.textContent = fmt(m.score);
+  // ภาพ
+  let photo, focus;
+  if (success) { photo = grab(960); focus = focusNow(now); }
+  else { photo = (r.peak.canvas) || grab(960); focus = r.peak.focus || focusNow(now); }
+  const res = { i: r.i, poseId: pose.id, name: pose.name, success, pts, ms: success ? Math.round(elapsed) : null, bonus, mult, photo, focus, frames: pose.type === 'reps' ? r.frames.slice() : null, gif: null };
+  m.results[r.i] = res;
+  if (m.room) Room.reportRound(r.i, success, res);
+  // เอฟเฟกต์
+  hud.glow.classList.remove('on');
+  if (success) {
+    const f = $('#flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
+    Sfx.success(); if (bonus) setTimeout(() => Sfx.bonus(), 450);
+    confetti(['🎉', '⭐', '✨', '😂', '🤣', '👏']);
+    hud.center.innerHTML = `<div class="banner-res win"><div class="big">สำเร็จ! 📸</div><div class="pts">+${fmt(pts)} แต้ม${mult > 1 ? ` • 🔥 คอมโบ ×${mult.toFixed(1)}` : ''}</div>${bonus ? `<div class="sub">✨ ${esc(pose.bonusLabel || 'โบนัส')} +${bonus}</div>` : ''}<div class="sub">${(elapsed / 1000).toFixed(1)} วินาที</div></div>`;
+  } else {
+    Sfx.fail();
+    confetti(['💨', '😵', '🐐', '🐔']);
+    hud.center.innerHTML = `<div class="banner-res lose"><div class="big">หมดเวลา! 😵</div><div class="pts">${pts ? `+${pts} แต้มปลอบใจ` : 'ไม่เป็นไร ด่านหน้าเอาใหม่'}</div></div>`;
+  }
+  setPhase(r, 'outro');
+  if (m.mode === 'practice') practiceEndUi(success, elapsed);
+}
+function confetti(set) {
+  const n = 18;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div');
+    s.className = 'particle'; s.textContent = set[i % set.length];
+    const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 260;
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px'); s.style.setProperty('--dy', Math.sin(a) * d + 'px'); s.style.setProperty('--r', (Math.random() * 540 - 270) + 'deg');
+    hud.fx.appendChild(s); setTimeout(() => s.remove(), 1200);
+  }
+}
+/** จับภาพจากกล้อง (กลับด้านแบบกระจก ให้ตรงกับที่ผู้เล่นเห็น) */
+function grab(maxW) {
+  const src = S.src; if (!src) return null;
+  const vw = S.vw, vh = S.vh, s = Math.min(1, maxW / vw);
+  const c = document.createElement('canvas'); c.width = Math.round(vw * s); c.height = Math.round(vh * s);
+  const x = c.getContext('2d'); x.translate(c.width, 0); x.scale(-1, 1);
+  try { x.drawImage(src, 0, 0, c.width, c.height); } catch (e) { return null; }
+  return c;
+}
+let gifCan = null;
+function gifFrame(pose) {
+  const src = S.src; if (!src) return null;
+  const w = 240, h = Math.round(240 * S.vh / S.vw);
+  if (!gifCan) gifCan = document.createElement('canvas');
+  gifCan.width = w; gifCan.height = h + 22;
+  const x = gifCan.getContext('2d');
+  x.save(); x.translate(w, 0); x.scale(-1, 1);
+  try { x.drawImage(src, 0, 0, w, h); } catch (e) { x.restore(); return null; }
+  x.restore();
+  x.fillStyle = '#07122e'; x.fillRect(0, h, w, 22);
+  x.fillStyle = '#f5c542'; x.font = '600 13px Kanit, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('ฮาท่าเทพ • ' + pose.name, w / 2, h + 11);
+  return x.getImageData(0, 0, w, h + 22);
+}
+/** จุดโฟกัสสำหรับครอปรูปลงบัตร (พิกัดภาพที่กลับด้านแล้ว 0..1) */
+function focusNow(now) {
+  const inp = freshInput(now);
+  if (inp.face) {
+    const b = inp.face.box;
+    return { cx: 1 - (b.x0 + b.x1) / 2, cy: (b.y0 + b.y1) / 2, w: b.x1 - b.x0, h: b.y1 - b.y0 };
+  }
+  const bs = inp.bodies.filter(b => b.ok);
+  if (bs.length) {
+    const xs = bs.map(b => b.nose.rx), sc = Math.max.apply(null, bs.map(b => b.scale));
+    const cx = 1 - (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+    const spread = (Math.max.apply(null, xs) - Math.min.apply(null, xs));
+    return { cx, cy: Math.min.apply(null, bs.map(b => b.nose.ry)) + sc * 0.4, w: spread + sc * 1.6 * S.vh / S.vw, h: sc * 1.6 };
+  }
+  return { cx: 0.5, cy: 0.45, w: 0.5, h: 0.5 };
+}
+
+/* ----- โหมดฝึกซ้อม ----- */
+function practiceEndUi(success, elapsed) {
+  setTimeout(() => {
+    if (!S.match || S.match.mode !== 'practice') return;
+    hud.center.innerHTML = `<div class="introcard" style="pointer-events:auto"><h3>${success ? 'ผ่าน! 🎉' : 'ยังไม่ผ่าน 😅'}</h3><p>${success ? `ใช้เวลา ${(elapsed / 1000).toFixed(1)} วินาที` : 'ดูเกจด้านล่างซ้าย ต้องให้ถึงเส้นทองทุกแถบ'}</p><div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" id="pAgain">🔁 ลองอีกครั้ง</button><button class="btn" id="pOther">เลือกท่าอื่น</button></div></div>`;
+    $('#pAgain').onclick = () => { Sfx.ui(); startMatch({ mode: 'practice', poseIds: S.match.poseIds }); };
+    $('#pOther').onclick = () => { Sfx.ui(); leaveStage(); go('practice'); };
+  }, 1400);
+}
+
+/* ==================== 10) ห้องแข่ง ==================== */
+const Room = {
+  pid: sstore.get('fpb_pid', null) || (() => { const p = uid(12); sstore.set('fpb_pid', p); return p; })(),
+  code: null, state: null, timer: 0, busy: false, pending: {}, prog: null, lastProgSent: 0, startedGame: 0, active: false,
+  async create() {
+    const n = S.cfg.roundsPerGame || 5;
+    const poseIds = PL.pickSolo(n, (Math.random() * 1e9) >>> 0);
+    const res = await api('roomCreate', { pid: this.pid, name: S.profile.name, dept: S.profile.dept, poseIds, roundMs: ROUND_MS });
+    if (!res.ok) { toast(res.error || 'สร้างห้องไม่สำเร็จ'); return false; }
+    this.enter(res.room); return true;
+  },
+  async join(code) {
+    const res = await api('roomJoin', { code, pid: this.pid, name: S.profile.name, dept: S.profile.dept });
+    if (!res.ok) { toast(res.error || 'เข้าห้องไม่สำเร็จ'); return false; }
+    this.enter(res.room); return true;
+  },
+  enter(room) {
+    this.code = room.code; this.state = room; this.active = true; this.startedGame = 0; this.autoAt = 0;
+    $('#toastHost').innerHTML = '';
+    history.replaceState(null, '', location.pathname + '?room=' + room.code + (MOCK ? '&mock=' + MOCK : '') + (API_KIND === 'mock' ? '&api=mock' : ''));
+    go('room'); this.render(); this.renderQr(); this.loop();
+  },
+  me() { return this.state && this.state.players.find(p => p.pid === this.pid); },
+  isHost() { return this.state && this.state.hostId === this.pid; },
+  link() { return location.origin + location.pathname + '?room=' + this.code + '&openExternalBrowser=1'; },
+  async renderQr() {
+    const box = $('#roomQr'); box.innerHTML = '<span class="spinner"></span>';
+    try {
+      const mod = await import(CDN.qr);
+      const qrcode = mod.default || mod;
+      const q = qrcode(0, 'M'); q.addData(this.link()); q.make();
+      box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    } catch (e) { box.innerHTML = `<div style="color:#07122e;font-weight:700;font-size:28px">${esc(this.code)}</div>`; }
+  },
+  render() {
+    const st = this.state; if (!st) return;
+    $('#roomCode').textContent = st.code;
+    $('#roomCount').textContent = `(${st.players.length} คน)`;
+    $('#roomPlayers').innerHTML = st.players.map(p => `<li><span class="av">${esc(initials(p.name))}</span><span class="nm">${esc(p.name)}${p.host ? ' 👑' : ''}${p.pid === this.pid ? ' (คุณ)' : ''}<small>${esc(p.dept || '')}${p.online === false ? ' • หลุดการเชื่อมต่อ' : ''}</small></span><span class="rd ${p.ready ? 'on' : ''}">${p.ready ? '✓ พร้อม' : 'รอ…'}</span></li>`).join('');
+    const me = this.me();
+    const btn = $('#btnReady');
+    btn.textContent = me && me.ready ? '✋ ยกเลิกพร้อม' : '💪 พร้อมสู้ชีวิต! (READY)';
+    btn.classList.toggle('primary', !(me && me.ready));
+    btn.disabled = st.status !== 'lobby';
+    const readyN = st.players.filter(p => p.ready).length;
+    $('#btnStart').classList.toggle('hidden', !this.isHost() || st.status !== 'lobby');
+    $('#btnStart').disabled = readyN < 1;
+    $('#btnStart').textContent = `🚀 เริ่มเกม (${readyN}/${st.players.length} พร้อม)`;
+    const stt = $('#roomStatus');
+    const allReady = st.players.length >= 2 && st.players.every(p => p.ready);
+    if (st.status === 'lobby' && allReady) stt.textContent = '🔥 ทุกคนพร้อมแล้ว! กำลังเริ่มเกม…';
+    else if (st.status === 'lobby') stt.textContent = this.isHost() ? 'ทุกคนกด READY ครบแล้วเกมจะเริ่มเอง หรือกดเริ่มเลยก็ได้ (คนที่ยังไม่พร้อมจะรอรอบหน้า)' : 'กด READY แล้วรอเพื่อน ๆ — ครบเมื่อไหร่เริ่มทันที';
+    else if (st.status === 'playing') stt.textContent = (me && st.players.find(p => p.pid === this.pid && p.playing)) ? 'กำลังเริ่ม!' : 'รอบนี้เริ่มไปแล้ว — รอรอบหน้านะ';
+    else stt.textContent = 'จบรอบแล้ว รอเจ้าของห้องเปิดรอบใหม่';
+  },
+  queueProg(p) { this.prog = p; },
+  reportRound(r, success, res) {
+    if (success) this.pending.clear = { r, ms: res.ms, pts: res.pts };
+    else this.pending.fail = { r, pts: res.pts };
+    this.kick();
+  },
+  kick() { clearTimeout(this.timer); this.timer = setTimeout(() => this.loop(), 30); },
+  async loop() {
+    clearTimeout(this.timer);
+    if (!this.active) return;
+    if (this.busy) { this.timer = setTimeout(() => this.loop(), 200); return; }
+    this.busy = true;
+    const payload = Object.assign({ code: this.code, pid: this.pid }, this.pending);
+    this.pending = {};
+    const inMatch = S.match && S.match.room && !S.match.ended;
+    if (inMatch && this.prog && performance.now() - this.lastProgSent > 1000) { payload.prog = this.prog; this.lastProgSent = performance.now(); }
+    const res = await api('roomSync', payload);
+    this.busy = false;
+    if (!this.active) return;
+    if (res.ok && res.room) this.onState(res.room);
+    else if (res.error === 'room_gone' || res.error === 'not_in_room') { toast('ห้องนี้ปิดไปแล้ว หรือคุณหลุดจากห้อง'); this.leave(true); go('home'); return; }
+    else { // เครือข่ายสะดุด: ส่งซ้ำรอบหน้า
+      if (payload.clear) this.pending.clear = payload.clear;
+      if (payload.fail) this.pending.fail = payload.fail;
+      if (payload.done) this.pending.done = true;
+    }
+    const iv = S.match && S.match.room && !S.match.ended ? 1200 : (S.phase === 'match' ? 1200 : (document.hidden ? 5000 : 1600));
+    this.timer = setTimeout(() => this.loop(), iv);
+  },
+  onState(room) {
+    const prevGame = this.state ? this.state.game : room.game;
+    this.state = room;
+    const me = this.me();
+    if (room.status === 'playing' && me && me.playing !== false && this.startedGame !== room.game && room.startAt) {
+      this.startedGame = room.game;
+      $('#resStandWrap').classList.add('hidden');
+      startMatch({ mode: 'room', poseIds: room.poseIds, room: { code: room.code, startAt: room.startAt, roundMs: room.roundMs, seed: room.seed } });
+    }
+    if (S.match && S.match.room) this.renderOpps();
+    if (room.game !== prevGame && room.status === 'lobby' && S.screen === 'result') {
+      toast('เจ้าของห้องเปิดรอบใหม่แล้ว!'); $('#btnAgain').textContent = '⚔️ กลับห้อง';
+    }
+    // ทุกคนกด READY ครบ (2 คนขึ้นไป) → เจ้าของห้องเริ่มเกมให้อัตโนมัติใน 3 วินาที
+    if (this.isHost() && room.status === 'lobby' && S.screen === 'room') {
+      const allReady = room.players.length >= 2 && room.players.every(p => p.ready);
+      if (!allReady) this.autoAt = 0;
+      else if (!this.autoAt) this.autoAt = Date.now() + 3000;
+      else if (Date.now() >= this.autoAt) { this.autoAt = 0; this.start(); }
+    } else this.autoAt = 0;
+    if (S.screen === 'room') this.render();
+    if (S.screen === 'result' && S.match && S.match.room && S.match.ended) renderStandings();
+  },
+  renderOpps() {
+    const m = S.match, r = m.round; if (!r) return;
+    const others = this.state.players.filter(p => p.pid !== this.pid && p.playing !== false);
+    hud.opps.innerHTML = others.map(p => {
+      const cl = p.clears && p.clears[r.i] != null;
+      const pr = cl ? 1 : (p.prog && p.prog.r === r.i && p.prog.g === this.state.game ? p.prog.p : 0);
+      return `<div class="opp ${cl ? 'clear' : ''}"><span class="av">${esc(initials(p.name))}</span><div><div class="nm">${esc(p.name)} ${cl ? '✓' : ''}</div><div class="pb"><i style="width:${Math.round(pr * 100)}%"></i></div></div></div>`;
+    }).join('');
+    // ใครผ่านก่อน → ปาของใส่จอเรา
+    others.forEach(p => {
+      Object.keys(p.clears || {}).forEach(k => {
+        const key = p.pid + ':' + k;
+        if (m.seenClears[key]) return;
+        m.seenClears[key] = true;
+        if (+k !== r.i) return;
+        if (!r.finished && r.phase === 'action') attack(p.name);
+        else if (r.phase === 'action' || r.phase === 'outro') toast(`✓ ${p.name} ผ่านด่านนี้แล้ว`, 1500);
+      });
+    });
+  },
+  async start() {
+    const res = await api('roomStart', { code: this.code, pid: this.pid });
+    if (!res.ok) toast(res.error || 'เริ่มเกมไม่ได้');
+    else this.onState(res.room);
+  },
+  async toggleReady() {
+    const me = this.me(); if (!me) return;
+    me.ready = !me.ready; this.render();
+    const res = await api('roomSync', { code: this.code, pid: this.pid, ready: me.ready });
+    if (res.ok) this.onState(res.room);
+  },
+  async rematch() {
+    const poseIds = PL.pickSolo(S.cfg.roundsPerGame || 5, (Math.random() * 1e9) >>> 0);
+    const res = await api('roomReset', { code: this.code, pid: this.pid, poseIds });
+    if (!res.ok) { toast(res.error || 'เปิดรอบใหม่ไม่ได้'); return; }
+    this.onState(res.room); go('room'); this.render();
+  },
+  leave(silent) {
+    if (this.active && !silent) api('roomSync', { code: this.code, pid: this.pid, leave: true });
+    this.active = false; clearTimeout(this.timer); this.code = null; this.state = null;
+    history.replaceState(null, '', location.pathname + (MOCK ? '?mock=' + MOCK + (API_KIND === 'mock' ? '&api=mock' : '') : (API_KIND === 'mock' ? '?api=mock' : '')));
+  }
+};
+function attack(name) {
+  const [emo, what] = ATTACK_ITEMS[Math.floor(Math.random() * ATTACK_ITEMS.length)];
+  const fx = hud.fx, W = OW, H = OH;
+  const side = Math.floor(Math.random() * 4);
+  const sx = side === 0 ? -80 : side === 1 ? W + 80 : Math.random() * W;
+  const sy = side < 2 ? Math.random() * H : (side === 2 ? -80 : H + 80);
+  const tx = W * (0.3 + Math.random() * 0.4), ty = H * (0.3 + Math.random() * 0.3);
+  const p = document.createElement('div'); p.className = 'projectile'; p.textContent = emo;
+  p.style.setProperty('--sx', sx + 'px'); p.style.setProperty('--sy', sy + 'px'); p.style.setProperty('--tx', tx + 'px'); p.style.setProperty('--ty', ty + 'px');
+  fx.appendChild(p); Sfx.whooshIn();
+  setTimeout(() => {
+    p.remove();
+    const s = document.createElement('div'); s.className = 'splat';
+    s.style.left = tx + 'px'; s.style.top = ty + 'px';
+    s.innerHTML = `<div class="blob">${emo}</div><div class="who">💥 ${esc(name)} ปา${esc(what)}ใส่คุณ!</div>`;
+    fx.appendChild(s); Sfx.splat();
+    stage.classList.remove('attacked'); void stage.offsetWidth; stage.classList.add('attacked');
+    setTimeout(() => s.remove(), 1650);
+  }, 560);
+}
+function roomStandings() {
+  const st = Room.state; if (!st) return [];
+  const ps = st.players.filter(p => p.playing !== false);
+  const firsts = {};
+  (st.poseIds || []).forEach((_, r) => {
+    let best = null;
+    ps.forEach(p => { const v = p.clears && p.clears[r]; if (v != null && (best === null || v < best.v)) best = { pid: p.pid, v }; });
+    if (best) firsts[best.pid] = (firsts[best.pid] || 0) + 1;
+  });
+  return ps.map(p => ({ pid: p.pid, name: p.name, dept: p.dept, base: p.score || 0, firsts: firsts[p.pid] || 0, total: (p.score || 0) + (firsts[p.pid] || 0) * FIRST_BONUS, cleared: Object.keys(p.clears || {}).length }))
+    .sort((a, b) => b.total - a.total);
+}
+
+/* ==================== 11) จบเกม: ผลลัพธ์ + บัตร + GIF ==================== */
+async function endMatch() {
+  const m = S.match; if (!m || m.ended) return;
+  m.ended = true;
+  if (m.round && m.round.voice) m.round.voice.stop();
+  S.need = { face: false, pose: false };
+  S.phase = 'result';
+  const rounds = m.poseIds.length;
+  let total = m.score;
+  if (m.room) {
+    Room.pending.done = true; Room.kick();
+    hud.center.innerHTML = '<div class="banner-res" style="background:rgba(7,18,46,.9)"><div class="big" style="font-size:30px">สรุปผล…</div><div class="sub">รอคะแนนเพื่อน ๆ</div></div>';
+    await sleep(2400);
+    const mine = roomStandings().find(x => x.pid === Room.pid);
+    if (mine) total = Math.max(total, m.score + mine.firsts * FIRST_BONUS);
+  }
+  m.total = total;
+  const cleared = m.results.filter(x => x && x.success).length;
+  const best = m.results.filter(x => x && x.success).sort((a, b) => a.ms - b.ms)[0] || m.results.filter(Boolean).sort((a, b) => b.pts - a.pts)[0];
+  const names = m.mode === 'duo' ? m.players.map(p => p.name).join(' & ') : S.profile.name;
+  const depts = m.mode === 'duo' ? Array.from(new Set(m.players.map(p => p.dept).filter(Boolean))).join(' & ') : S.profile.dept;
+  m.title = makeTitle(best ? best.poseId : null, total, rounds, m.mode === 'duo' ? m.players[0].dept : S.profile.dept);
+  m.card = { names, depts, pos: pickPosition(names), best };
+  leaveStage();
+  go('result');
+  Sfx.fanfare();
+  renderResult();
+  if (m.mode !== 'practice') submitScore();
+}
+function tierOf(total, rounds) {
+  const r = total / (rounds * 250);
+  return r >= 0.75 ? ' ระดับเหรียญทอง' : r >= 0.5 ? ' ระดับเหรียญเงิน' : r >= 0.25 ? ' ระดับเหรียญทองแดง' : ' (ฝึกหัด)';
+}
+function makeTitle(poseId, total, rounds, dept) {
+  const pose = poseId && PL.BY_ID[poseId];
+  const tpl = pose ? pose.titles[Math.floor(Math.random() * pose.titles.length)] : 'นักสู้ผู้ไม่ยอมแพ้{tier}';
+  return tpl.replace('{tier}', tierOf(total, rounds)).replace('{dept}', deptLabel(dept));
+}
+function pickPosition(seedStr) { const rr = PL.rng(PL.hashStr(seedStr + '|' + Date.now())); return POSITIONS[Math.floor(rr() * POSITIONS.length)]; }
+function renderResult() {
+  const m = S.match;
+  const modeName = { daily: '🎯 ด่านประจำวัน', room: `⚔️ ห้องแข่ง ${Room.code || ''}`, duo: '💞 คู่หูกล้องเดียว' }[m.mode] || '';
+  $('#resMode').textContent = modeName + ' • ' + thaiDate(S.today);
+  $('#resScore').textContent = fmt(m.total);
+  const cleared = m.results.filter(x => x && x.success).length;
+  $('#resSub').textContent = `ผ่าน ${cleared}/${m.poseIds.length} ด่าน`;
+  $('#resTitle').textContent = '🏅 ' + m.title;
+  $('#resRounds').innerHTML = m.poseIds.map((id, i) => {
+    const x = m.results[i];
+    if (!x) return `<li><span></span><div>${esc(PL.BY_ID[id].name)}<small>ไม่ได้เล่น</small></div><span class="ng">–</span></li>`;
+    const img = x.photo ? x.photo.toDataURL('image/jpeg', 0.8) : '';
+    x.thumb = img;
+    return `<li><img src="${img}" alt="ภาพด่าน ${i + 1}" data-img="${i}"><div>${esc(x.name)}<small>${x.success ? `${(x.ms / 1000).toFixed(1)} วิ${x.mult > 1 ? ` • คอมโบ ×${x.mult.toFixed(1)}` : ''}${x.bonus ? ` • โบนัส +${x.bonus}` : ''}` : 'ไม่ผ่าน'}</small>${x.frames && x.frames.length > 4 ? `<button class="gifbtn" data-gif="${i}">🎞️ GIF 2 วิ</button>` : ''}</div><span class="${x.success ? 'ok' : 'ng'}">+${fmt(x.pts)}</span></li>`;
+  }).join('');
+  $('#resStandWrap').classList.toggle('hidden', !m.room);
+  if (m.room) renderStandings();
+  $('#btnAgain').textContent = m.room ? (Room.isHost() ? '⚔️ เล่นอีกรอบ (ห้องเดิม)' : '⚔️ กลับห้อง') : '🔁 เล่นอีกครั้ง';
+  $('#resSubmit').textContent = '';
+  drawIdCard();
+}
+function renderStandings() {
+  const rows = roomStandings();
+  $('#resStand').innerHTML = rows.map((p, i) => `<li class="${p.pid === Room.pid ? 'me' : ''}"><b>${['🥇', '🥈', '🥉'][i] || i + 1}</b><span>${esc(p.name)}<small class="note"> ผ่าน ${p.cleared} ด่าน${p.firsts ? ` • เร็วสุด ${p.firsts} ครั้ง (+${p.firsts * FIRST_BONUS})` : ''}</small></span><b>${fmt(p.total)}</b></li>`).join('');
+}
+async function submitScore() {
+  const m = S.match;
+  const line = $('#resSubmit');
+  line.innerHTML = '<span class="spinner"></span> กำลังบันทึกคะแนน…';
+  const cleared = m.results.filter(x => x && x.success).length;
+  const best = m.card.best;
+  const payload = {
+    mode: m.mode, name: S.profile.name, dept: S.profile.dept, score: m.total, cleared, rounds: m.poseIds.length,
+    bestPose: best ? best.name : '', title: m.title, roomCode: m.room ? m.room.code : ''
+  };
+  if (m.mode === 'duo') payload.players = m.players;
+  let res = null;
+  for (let tries = 0; tries < 3; tries++) { res = await api('submit', payload); if (res.ok) break; await sleep(1200); }
+  if (!res || !res.ok) {
+    line.innerHTML = `⚠️ บันทึกคะแนนไม่สำเร็จ (${esc(res && res.error || '')}) <button class="btn" id="btnRetrySubmit" style="padding:4px 10px;font-size:14px">ลองใหม่</button>`;
+    $('#btnRetrySubmit').onclick = submitScore; return;
+  }
+  if (!res.counted) line.textContent = S.status === 'upcoming' ? 'ซีซั่นยังไม่เริ่ม — เกมนี้ไม่นับคะแนน' : (S.status === 'ended' ? 'ซีซั่นจบแล้ว — เกมนี้ไม่นับคะแนน' : 'บันทึกแล้ว (ไม่นับคะแนนซีซั่น)');
+  else {
+    line.textContent = `✅ บันทึกแล้ว • ดีที่สุดวันนี้ ${fmt(res.todayBest)} • คะแนนซีซั่น ${fmt(res.seasonTotal)}` + (res.seasonRank ? ` (อันดับ ${res.seasonRank})` : (res.hidden ? ' • 🔒 ช่วงซ่อนอันดับ' : ''));
+    S.me.total = res.seasonTotal; S.me.rank = res.seasonRank;
+    if (m.mode === 'daily') store.set('fpb_todaybest', { date: S.today, name: S.profile.name, score: res.todayBest });
+    renderMeChip();
+  }
+}
+/* ----- บัตรพนักงานเกียรติยศ (Meme ID Card) ----- */
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function fitFont(c, text, weight, size, family, maxW) {
+  let s = size; c.font = `${weight} ${s}px ${family}`;
+  while (c.measureText(text).width > maxW && s > 12) { s -= 2; c.font = `${weight} ${s}px ${family}`; }
+  return s;
+}
+async function drawIdCard() {
+  const m = S.match, cv = $('#idCanvas'), c = cv.getContext('2d');
+  try { await Promise.all([document.fonts.load('800 56px Kanit'), document.fonts.load('600 24px Kanit'), document.fonts.load('600 24px Sarabun')]); } catch (e) { /* ใช้ฟอนต์สำรอง */ }
+  const W = 720, H = 1040, K = 'Kanit, sans-serif', B = 'Sarabun, Kanit, sans-serif';
+  c.clearRect(0, 0, W, H);
+  // พื้นหลัง
+  rr(c, 0, 0, W, H, 40); c.save(); c.clip();
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#13306e'); g.addColorStop(1, '#050c20'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.globalAlpha = 0.05; c.strokeStyle = '#f5c542'; c.lineWidth = 14;
+  for (let x = -H; x < W; x += 60) { c.beginPath(); c.moveTo(x, H); c.lineTo(x + H, 0); c.stroke(); }
+  c.globalAlpha = 1;
+  // แถบหัวสีทอง
+  const gg = c.createLinearGradient(0, 0, W, 0); gg.addColorStop(0, '#c99a1a'); gg.addColorStop(0.5, '#ffdd7a'); gg.addColorStop(1, '#c99a1a');
+  c.fillStyle = gg; c.fillRect(0, 0, W, 176);
+  c.fillStyle = 'rgba(5,12,32,.85)'; rr(c, W / 2 - 55, 24, 110, 20, 10); c.fill();
+  c.fillStyle = '#07122e'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  fitFont(c, S.cfg.orgName, 800, 38, K, W - 80); c.fillText(S.cfg.orgName, W / 2, 104);
+  c.font = `600 21px ${K}`; c.fillStyle = '#3b2a00'; c.fillText('บัตรพนักงานเกียรติยศ • EMPLOYEE OF THE LOL', W / 2, 146);
+  // รูป
+  const px = 150, py = 206, ps = 420;
+  c.fillStyle = '#f5c542'; rr(c, px - 10, py - 10, ps + 20, ps + 20, 34); c.fill();
+  c.save(); rr(c, px, py, ps, ps, 26); c.clip();
+  const best = m.card.best;
+  const photo = best && best.photo;
+  if (photo) {
+    const f = best.focus || { cx: 0.5, cy: 0.45, w: 0.5, h: 0.5 };
+    const iw = photo.width, ih = photo.height;
+    let side = Math.max(f.w * iw, f.h * ih) * 1.9;
+    side = clamp(side, Math.min(iw, ih) * 0.35, Math.min(iw, ih));
+    const sx = clamp(f.cx * iw - side / 2, 0, iw - side), sy = clamp(f.cy * ih - side * 0.45, 0, ih - side);
+    c.drawImage(photo, sx, sy, side, side, px, py, ps, ps);
+  } else { c.fillStyle = '#1d428f'; c.fillRect(px, py, ps, ps); c.font = `160px ${K}`; c.fillStyle = '#fff'; c.fillText('🤪', W / 2, py + ps / 2 + 55); }
+  c.restore();
+  // ตราประทับ
+  c.save(); c.translate(px + ps - 30, py + ps - 40); c.rotate(-0.3);
+  c.strokeStyle = 'rgba(255,77,94,.92)'; c.fillStyle = 'rgba(255,77,94,.92)'; c.lineWidth = 6;
+  c.beginPath(); c.arc(0, 0, 70, 0, Math.PI * 2); c.stroke(); c.lineWidth = 2; c.beginPath(); c.arc(0, 0, 60, 0, Math.PI * 2); c.stroke();
+  c.font = `800 30px ${K}`; c.fillText('ขำจริง', 0, -4); c.font = `600 18px ${K}`; c.fillText('ไม่จกตา', 0, 24); c.restore();
+  // ชื่อ ตำแหน่ง ฉายา
+  c.textAlign = 'center'; c.fillStyle = '#fff';
+  fitFont(c, m.card.names, 800, 58, K, W - 80); c.fillText(m.card.names, W / 2, 712);
+  c.fillStyle = '#9fb0d6'; c.font = `600 25px ${B}`; c.fillText(m.card.depts ? deptLabel(m.card.depts) : 'ไม่สังกัดแผนก (อิสระ)', W / 2, 752);
+  c.fillStyle = '#ffdd7a'; fitFont(c, 'ตำแหน่ง: ' + m.card.pos, 600, 26, K, W - 70); c.fillText('ตำแหน่ง: ' + m.card.pos, W / 2, 796);
+  c.fillStyle = 'rgba(245,197,66,.16)'; c.strokeStyle = 'rgba(245,197,66,.7)'; c.lineWidth = 2; rr(c, 40, 818, W - 80, 58, 29); c.fill(); c.stroke();
+  c.fillStyle = '#fff'; fitFont(c, '🏅 ฉายา: ' + m.title, 600, 25, K, W - 120); c.fillText('🏅 ฉายา: ' + m.title, W / 2, 856);
+  // สถิติ
+  const stats = [['คะแนน', fmt(m.total)], ['ผ่านด่าน', `${m.results.filter(x => x && x.success).length}/${m.poseIds.length}`], ['วันที่', thaiDate(S.today)]];
+  stats.forEach(([k, v], i) => {
+    const bx = 40 + i * ((W - 80) / 3), bw = (W - 80) / 3 - 10;
+    c.fillStyle = 'rgba(255,255,255,.07)'; rr(c, bx, 892, bw, 70, 16); c.fill();
+    c.fillStyle = '#9fb0d6'; c.font = `500 17px ${K}`; c.fillText(k, bx + bw / 2, 918);
+    c.fillStyle = '#fff'; fitFont(c, v, 700, 26, K, bw - 16); c.fillText(v, bx + bw / 2, 950);
+  });
+  // บาร์โค้ด + รหัสพนักงาน
+  const rnd = PL.rng(PL.hashStr(m.card.names + S.today));
+  const emp = `HA-${new Date().getFullYear() + 543}-${String(Math.floor(rnd() * 9000) + 1000)}`;
+  c.fillStyle = '#fff'; let x = 44;
+  while (x < 300) { const w = 2 + Math.floor(rnd() * 4); c.fillRect(x, 978, w, 34); x += w + 2 + Math.floor(rnd() * 4); }
+  c.textAlign = 'left'; c.font = `500 15px ${K}`; c.fillStyle = '#9fb0d6'; c.fillText(emp, 44, 1030);
+  c.textAlign = 'right'; c.fillStyle = '#ffdd7a'; c.font = `700 22px ${K}`; c.fillText('ฮาท่าเทพ', W - 44, 1000);
+  c.fillStyle = '#9fb0d6'; fitFont(c, S.cfg.seasonName, 500, 15, K, 300); c.fillText(S.cfg.seasonName, W - 44, 1026);
+  c.restore();
+}
+function canvasBlob(cv, type = 'image/png', q) { return new Promise(r => cv.toBlob(r, type, q)); }
+function download(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function shareBlob(blob, name, text) {
+  const file = new File([blob], name, { type: blob.type });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'ฮาท่าเทพ', text }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  download(blob, name); toast('บันทึกไฟล์แล้ว ส่งต่อในกลุ่มได้เลย');
+}
+async function makeGif(res) {
+  if (res.gif) return res.gif;
+  const { GIFEncoder, quantize, applyPalette } = await import(CDN.gif);
+  const enc = GIFEncoder();
+  const frames = res.frames;
+  for (let i = 0; i < frames.length; i++) {
+    const fr = frames[i];
+    const pal = quantize(fr.data, 128);
+    enc.writeFrame(applyPalette(fr.data, pal), fr.width, fr.height, { palette: pal, delay: 100 });
+    if (i % 4 === 3) await sleep(0);
+  }
+  enc.finish();
+  res.gif = new Blob([enc.bytes()], { type: 'image/gif' });
+  return res.gif;
+}
+
+/* ==================== 12) ตารางอันดับ ==================== */
+let boardScope = 'season';
+async function openBoard(scope) {
+  boardScope = scope || boardScope;
+  $('#modalBoard').classList.remove('hidden');
+  $$('#boardTabs button').forEach(b => b.classList.toggle('on', b.dataset.scope === boardScope));
+  $('#boardList').innerHTML = '<li class="empty"><span class="spinner"></span> กำลังโหลด…</li>';
+  $('#boardMeta').textContent = '';
+  const res = await api('leaderboard', { scope: boardScope, name: S.profile.name });
+  if (!res.ok) { $('#boardList').innerHTML = `<li class="empty">โหลดไม่สำเร็จ: ${esc(res.error || '')}</li>`; return; }
+  const cfg = res.config || S.cfg;
+  const range = boardScope === 'today' ? thaiDate(res.today) : `${thaiDate(res.from)} – ${thaiDate(res.to)}`;
+  let meta = `${esc(cfg.seasonName)} • ${range}`;
+  if (res.status === 'ended') meta += ' • 🏁 จบซีซั่นแล้ว (ผลสุดท้าย)';
+  if (res.hidden) meta += ` • 🔒 ซ่อนอันดับ ${cfg.hideLastDays} วันสุดท้าย (แสดงถึง ${thaiDate(res.cutoff)})`;
+  if (cfg.prizeNote) meta += `<br>🎁 ${esc(cfg.prizeNote)}`;
+  if (res.me) meta += `<br>คุณ: ${fmt(res.me.total)} แต้ม${res.me.rank ? ` • อันดับ ${res.me.rank}` : ''}`;
+  $('#boardMeta').innerHTML = meta;
+  const myKey = pkey(S.profile.name);
+  if (!res.rows || !res.rows.length) { $('#boardList').innerHTML = `<li class="empty">${res.hidden && boardScope === 'today' ? '🔒 ช่วงนี้ซ่อนอันดับ ลุ้นตอนประกาศผล!' : 'ยังไม่มีใครเล่นในช่วงนี้ — เป็นคนแรกเลย!'}</li>`; return; }
+  $('#boardList').innerHTML = res.rows.map((p, i) => `<li class="${p.key === myKey ? 'me' : ''}"><span class="rk">${['🥇', '🥈', '🥉'][i] || i + 1}</span><span class="nm">${esc(p.name)}<small>${esc(p.dept || '')}${boardScope !== 'today' ? ` • เล่น ${p.days} วัน` : ''}</small></span><span class="pt">${fmt(p.total)}<small>ดีสุด ${fmt(p.best)}</small></span></li>`).join('');
+}
+$('#boardTabs').addEventListener('click', e => { const b = e.target.closest('button[data-scope]'); if (b) { Sfx.ui(); openBoard(b.dataset.scope); } });
+
+/* ==================== 13) หน้าจอ / การนำทาง / บูต ==================== */
+function go(name) {
+  S.screen = name;
+  ['home', 'room', 'practice', 'result'].forEach(n => $('#scr-' + n).classList.toggle('hidden', n !== name));
+  window.scrollTo(0, 0);
+  if (name === 'home') renderHome();
+  if (name === 'practice') renderPractice();
+}
+function leaveStage() {
+  if (S.match && S.match.round && S.match.round.voice) S.match.round.voice.stop();
+  S.need = { face: false, pose: false };
+  if (S.setup) { const rej = S.setup.reject; closeSetup(); rej(new Error('cancel')); }
+  if (S.phase === 'match' || S.phase === 'setup') S.phase = 'idle';
+  if (S.match && !S.match.ended && S.match.mode === 'practice') S.match = null;
+  resetHud();
+  showStage(false);
+}
+function needProfile() {
+  S.profile.name = $('#inName').value.trim().slice(0, 30);
+  S.profile.dept = $('#inDept').value.trim().slice(0, 30);
+  if (!S.profile.name) { toast('ใส่ชื่อเล่นก่อนนะ จะได้สะสมคะแนนถูกคน'); $('#inName').focus(); return false; }
+  store.set('fpb_profile', S.profile);
+  return true;
+}
+async function ensureSetup(persons) {
+  if (S.calibrated && S.camOn && persons === 1) return true;
+  try { await runSetup({ persons }); return true; }
+  catch (e) { return false; }
+}
+function dailyPoses() { return PL.pickSolo(S.cfg.roundsPerGame || 5, PL.hashStr(S.today + '|' + S.cfg.seasonName)); }
+
+async function playDaily() {
+  if (!needProfile()) return;
+  Sfx.unlock();
+  if (!await ensureSetup(1)) return;
+  startMatch({ mode: 'daily', poseIds: dailyPoses() });
+}
+async function playDuo() {
+  if (!needProfile()) return;
+  const partner = $('#inPartner').value.trim().slice(0, 30);
+  if (!partner) { toast('ใส่ชื่อคู่หูก่อนนะ'); $('#inPartner').focus(); return; }
+  if (pkey(partner) === pkey(S.profile.name)) { toast('ชื่อคู่หูต้องไม่ซ้ำกับชื่อคุณ'); return; }
+  const players = [{ name: S.profile.name, dept: S.profile.dept }, { name: partner, dept: $('#inPartnerDept').value.trim().slice(0, 30) }];
+  store.set('fpb_partner', players[1]);
+  Sfx.unlock();
+  if (!await ensureSetup(2)) return;
+  startMatch({ mode: 'duo', poseIds: DUO_POSES.slice(), players });
+}
+async function playRoom(code) {
+  if (!needProfile()) return;
+  if (API_KIND === 'local') { toast('ห้องแข่งต้องเชื่อม Google Sheets ก่อน (ดู README) — ลองโหมดจำลองได้ที่ ?api=mock', 4200); return; }
+  Sfx.unlock();
+  if (!await ensureSetup(1)) return;
+  showStage(false);
+  const ok = code ? await Room.join(code) : await Room.create();
+  if (!ok) go('home');
+}
+function renderPractice() {
+  $('#poseGrid').innerHTML = PL.POSES.map(p => `<button class="posecard" data-pose="${p.id}"><div class="art">${Art.svg(p.id)}</div><b>${esc(p.name)}</b><small>${p.cat === 'face' ? 'ใบหน้า' : p.cat === 'duo' ? 'ท่าคู่ (2 คน)' : 'ร่างกาย'} • ${p.type === 'hold' ? `ค้าง ${p.holdMs / 1000} วิ` : `${p.target} ครั้ง`}</small></button>`).join('');
+}
+$('#poseGrid').addEventListener('click', async e => {
+  const b = e.target.closest('[data-pose]'); if (!b) return;
+  Sfx.unlock(); Sfx.ui();
+  const pose = PL.BY_ID[b.dataset.pose];
+  if (!await ensureSetup(pose.persons)) { go('practice'); return; }
+  startMatch({ mode: 'practice', poseIds: [pose.id] });
+});
+
+function renderMeChip() { $('#chipPoints').textContent = '⭐ ' + (S.me.total ? fmt(S.me.total) : '0') + (S.me.rank ? ` • #${S.me.rank}` : ''); }
+function renderCountdown() {
+  if (!S.cfg) return;
+  const [y, mo, d] = S.cfg.seasonEnd.split('-').map(Number);
+  const [ys, ms, ds] = S.cfg.seasonStart.split('-').map(Number);
+  const endTs = Date.UTC(y, mo - 1, d, 16, 59, 59), startTs = Date.UTC(ys, ms - 1, ds, -7, 0, 0);
+  const now = Clock.now();
+  let txt;
+  if (now < startTs) txt = `🗓️ เริ่ม ${thaiDate(S.cfg.seasonStart)}`;
+  else if (now > endTs) txt = '🏁 จบซีซั่นแล้ว';
+  else { const left = endTs - now, dd = Math.floor(left / 864e5), hh = Math.floor(left % 864e5 / 36e5), mm = Math.floor(left % 36e5 / 6e4); txt = `⏳ เหลือ ${dd ? dd + ' วัน ' : ''}${hh} ชม.${dd ? '' : ' ' + mm + ' นาที'}`; }
+  $('#chipCountdown').textContent = txt;
+  const today = bkkKey(now);
+  if (today !== S.today) { S.today = today; if (S.screen === 'home') renderHome(); }
+  $('#finalDayChip').style.display = S.today === S.cfg.seasonEnd && S.status === 'live' ? '' : 'none';
+}
+function renderHome() {
+  if (!S.cfg) return;
+  if (!$('#inName').value) $('#inName').value = S.profile.name;      // อย่าทับสิ่งที่ผู้ใช้กำลังพิมพ์
+  if (!$('#inDept').value) $('#inDept').value = S.profile.dept;
+  const partner = store.get('fpb_partner', null);
+  if (partner && !$('#inPartner').value) { $('#inPartner').value = partner.name || ''; $('#inPartnerDept').value = partner.dept || ''; }
+  $('#dailyCount').textContent = S.cfg.roundsPerGame;
+  $('#todayPoses').innerHTML = dailyPoses().map((id, i) => `<span>${i + 1}. ${esc(PL.BY_ID[id].name)}</span>`).join('');
+  const tb = store.get('fpb_todaybest', null);
+  const chip = $('#todayBest');
+  if (tb && tb.date === S.today && pkey(tb.name) === pkey(S.profile.name)) { chip.style.display = ''; chip.textContent = `ดีสุดวันนี้ ${fmt(tb.score)}`; } else chip.style.display = 'none';
+  $('#ruleFinal').textContent = `วันสุดท้าย (${thaiDate(S.cfg.seasonEnd)}) ×${S.cfg.finalDayMultiplier}`;
+  $('#prizeNote').textContent = S.cfg.prizeNote || 'ลุ้นจนวินาทีสุดท้าย';
+  const banners = [];
+  if (API_KIND === 'local') banners.push('🧪 โหมดทดลอง: ยังไม่ได้เชื่อม Google Sheets — คะแนนเก็บในเครื่องนี้เท่านั้น และยังใช้ห้องแข่งไม่ได้');
+  if (API_KIND === 'mock') banners.push('🤖 โหมดจำลอง: ห้องแข่งมีบอท 2 ตัว (รหัสห้อง TEST)');
+  if (MOCK) banners.push('🎭 โหมดทดสอบไม่ใช้กล้อง: ' + (MOCK === 'keys' ? 'กด Space ค้าง = ทำท่าถูก, R = นับครั้ง' : 'ระบบจะทำท่าให้อัตโนมัติ'));
+  if (S.status === 'upcoming') banners.push(`🗓️ ซีซั่นเริ่ม ${thaiDate(S.cfg.seasonStart)} — ตอนนี้เล่นซ้อมได้ แต่ยังไม่นับคะแนน`);
+  if (S.status === 'ended') banners.push('🏁 ซีซั่นนี้จบแล้ว — ดูผลสรุปที่ปุ่ม 🏆 (เล่นต่อได้แต่ไม่นับคะแนน)');
+  if (/\bLine\//i.test(navigator.userAgent)) banners.push('📱 เปิดใน LINE อยู่ — ถ้ากล้องไม่ทำงาน ให้กด ⋯ แล้วเลือก "เปิดในเบราว์เซอร์"');
+  $('#banners').innerHTML = banners.map(b => `<div class="banner">${esc(b)}</div>`).join('');
+  if (!$('#heroStrip').innerHTML) {
+    const pick = PL.shuffle(['jawdrop', 'gorilla', 'puffer', 'matrix', 'grin32', 'wings', 'puppy', 'heart'], Math.random).slice(0, 3);
+    $('#heroStrip').innerHTML = pick.map(id => `<div class="art">${Art.svg(id)}</div>`).join('');
+  }
+  renderCountdown();
+}
+async function loadConfig() {
+  const res = await api('config');
+  if (res.ok) {
+    S.cfg = res.config; S.today = res.today || bkkKey(); S.status = res.status || statusOf(S.cfg, S.today);
+  } else {
+    toast('โหลดการตั้งค่าซีซั่นไม่สำเร็จ ใช้ค่าเริ่มต้นไปก่อน', 3500);
+    const t = bkkKey();
+    S.cfg = { seasonName: 'ซีซั่น 1', seasonStart: t, seasonEnd: addDays(t, 13), finalDayMultiplier: 2, hideLastDays: 0, orgName: 'ออฟฟิศฮาไม่หยุด', difficulty: 'normal', roundsPerGame: 5, prizeNote: '' };
+    S.today = t; S.status = 'live';
+  }
+  S.k = PL.DIFF[S.cfg.difficulty] || 1;
+  $('#seasonLabel').textContent = S.cfg.seasonName;
+}
+async function refreshMe() {
+  if (!S.profile.name) { renderMeChip(); return; }
+  const res = await api('leaderboard', { scope: 'season', name: S.profile.name });
+  if (res.ok && res.me) { S.me = { total: res.me.total, rank: res.me.rank }; }
+  renderMeChip();
+}
+
+/* ----- ปุ่มต่าง ๆ ----- */
+$('#btnDaily').onclick = () => { Sfx.unlock(); Sfx.ui(); playDaily(); };
+$('#btnDuo').onclick = () => { Sfx.unlock(); Sfx.ui(); playDuo(); };
+$('#btnPractice').onclick = () => { Sfx.unlock(); Sfx.ui(); if (needProfile()) go('practice'); };
+$('#btnRoomCreate').onclick = () => { Sfx.unlock(); Sfx.ui(); playRoom(null); };
+$('#btnRoomJoin').onclick = () => {
+  Sfx.unlock(); Sfx.ui();
+  const code = $('#inCode').value.trim().toUpperCase();
+  if (code.length < 4) { toast('ใส่รหัสห้อง 4 ตัว'); $('#inCode').focus(); return; }
+  playRoom(code);
+};
+$('#inCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#btnRoomJoin').click(); });
+$('#btnReady').onclick = () => { Sfx.ui(); Room.toggleReady(); };
+$('#btnStart').onclick = () => { Sfx.ui(); Room.start(); };
+$('#btnRoomLeave').onclick = () => { Sfx.ui(); Room.leave(); go('home'); };
+$('#btnCopyLink').onclick = async () => { try { await navigator.clipboard.writeText(Room.link()); toast('คัดลอกลิงก์แล้ว ส่งให้เพื่อนได้เลย'); } catch (e) { toast(Room.link(), 6000); } };
+$('#btnShareLink').onclick = async () => {
+  const data = { title: 'ฮาท่าเทพ — มาแข่งกัน!', text: `เข้าห้อง ${Room.code} มาทำท่าฮาแข่งกัน`, url: Room.link() };
+  if (navigator.share) { try { await navigator.share(data); } catch (e) { /* ยกเลิก */ } } else $('#btnCopyLink').click();
+};
+$('#btnMute').onclick = () => { Sfx.setMuted(!Sfx.muted); $('#btnMute').textContent = Sfx.muted ? '🔇' : '🔊'; };
+$('#btnBoard').onclick = () => { Sfx.unlock(); Sfx.ui(); openBoard('season'); };
+$('#btnResBoard').onclick = () => { Sfx.ui(); openBoard('season'); };
+$('#btnAgain').onclick = () => {
+  Sfx.ui();
+  const m = S.match;
+  if (m && m.room) { if (Room.isHost() && Room.state && Room.state.status !== 'lobby') Room.rematch(); else { go('room'); Room.render(); } return; }
+  if (S.last.mode === 'duo') { startMatch({ mode: 'duo', poseIds: DUO_POSES.slice(), players: S.last.players }); return; }
+  startMatch({ mode: 'daily', poseIds: dailyPoses() });
+};
+$('#btnCardDl').onclick = async () => { const b = await canvasBlob($('#idCanvas')); download(b, `บัตรพนักงานเกียรติยศ-${S.profile.name}.png`); };
+$('#btnCardShare').onclick = async () => { const b = await canvasBlob($('#idCanvas')); shareBlob(b, `haa-id-card-${Date.now()}.png`, `${S.match.title} 😂 #ฮาท่าเทพ`); };
+$('#btnCardShuffle').onclick = () => { Sfx.ui(); S.match.card.pos = pickPosition(S.match.card.names + Math.random()); drawIdCard(); };
+$('#resRounds').addEventListener('click', async e => {
+  const im = e.target.closest('[data-img]'), gb = e.target.closest('[data-gif]');
+  const m = S.match; if (!m) return;
+  if (im) {
+    const x = m.results[+im.dataset.img];
+    $('#lightImg').src = x.thumb; $('#lightDl').href = x.photo.toDataURL('image/jpeg', 0.92); $('#lightDl').download = `ฮาท่าเทพ-${x.name}.jpg`;
+    $('#modalImg').classList.remove('hidden');
+  }
+  if (gb) {
+    const x = m.results[+gb.dataset.gif];
+    gb.innerHTML = '<span class="spinner"></span> กำลังสร้าง…';
+    try {
+      const blob = await makeGif(x);
+      const url = URL.createObjectURL(blob);
+      $('#lightImg').src = url; $('#lightDl').href = url; $('#lightDl').download = `ฮาท่าเทพ-${x.name}.gif`;
+      $('#modalImg').classList.remove('hidden');
+      gb.textContent = '🎞️ ดู GIF';
+    } catch (err) { console.error(err); gb.textContent = 'สร้าง GIF ไม่ได้'; }
+  }
+});
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-close]') || e.target.classList.contains('modal')) { const md = e.target.closest('.modal'); if (md) md.classList.add('hidden'); }
+  const g = e.target.closest('[data-go]'); if (g) { Sfx.ui(); if (S.screen === 'room') Room.leave(); go(g.dataset.go); }
+});
+let quitArm = 0;
+$('#btnQuit').onclick = () => {
+  if (S.phase === 'setup') { leaveStage(); if (Room.active) go('room'); else go('home'); return; }
+  if (S.match && S.match.mode === 'practice') { leaveStage(); go('practice'); return; }
+  if (Date.now() - quitArm > 2500) { quitArm = Date.now(); toast('แตะ ✕ อีกครั้งเพื่อออกจากเกม (คะแนนเกมนี้จะไม่ถูกบันทึก)'); return; }
+  if (S.match) { S.match.ended = true; }
+  leaveStage();
+  if (Room.active) { go('room'); Room.render(); } else go('home');
+};
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') $$('.modal').forEach(md => md.classList.add('hidden'));
+  if (!MOCK) return;
+  if (e.code === 'Space') { keys.space = true; e.preventDefault(); }
+  if (e.key === 'r' || e.key === 'R') keys.rep++;
+});
+document.addEventListener('keyup', e => { if (e.code === 'Space') keys.space = false; });
+document.addEventListener('pointerdown', () => Sfx.unlock(), { once: true });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && S.match && !S.match.ended && !S.match.room && S.phase === 'match') {
+    S.match.ended = true; leaveStage(); go('home'); toast('ออกจากเกมเพราะสลับแอป — เริ่มใหม่ได้เลย');
+  }
+});
+window.addEventListener('pagehide', () => { if (Room.active) api('roomSync', { code: Room.code, pid: Room.pid, leave: true }); });
+
+/* ----- ลูปหลัก ----- */
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (!S.stageOn) return;
+  const dt = S.lastFrame ? Math.min(200, now - S.lastFrame) : 16;
+  S.lastFrame = now;
+  try { detectFrame(now); } catch (e) { console.error('detect', e); }
+  try {
+    if (S.phase === 'setup') setupTick(now);
+    else if (S.phase === 'match' && S.match) matchTick(now, dt);
+    drawOverlay(now);
+    if (MOCK) drawMockCam(now);
+  } catch (e) { console.error('frame', e); }
+}
+
+/* ----- บูต ----- */
+(async function boot() {
+  $('#btnMute').textContent = Sfx.muted ? '🔇' : '🔊';
+  $('#inName').value = S.profile.name; $('#inDept').value = S.profile.dept;
+  await loadConfig();
+  go('home');
+  refreshMe();
+  setInterval(renderCountdown, 30000);
+  requestAnimationFrame(frame);
+  const code = (Q.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code) {
+    $('#inCode').value = code;
+    if (S.profile.name) toast(`กด "เข้าห้อง" เพื่อเข้าห้อง ${code}`, 5000);
+    else { toast(`ใส่ชื่อเล่นแล้วกด "เข้าห้อง" เพื่อเข้าห้อง ${code}`, 5000); $('#inName').focus(); }
+    $('#btnRoomJoin').scrollIntoView({ block: 'center' });
+  }
+  window.__fpb = { S, Room, PL, Art, Sfx, startMatch, endMatch, openBoard };   // สำหรับดีบัก/ทดสอบ
+})();
+</script>
+</body>
+</html>
